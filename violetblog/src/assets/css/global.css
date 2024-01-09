@@ -1,0 +1,264 @@
+/* 全局样式 */
+HTML,
+body,
+#app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: cursive;
+}
+*{
+    box-sizing: border-box;
+}
+
+/* 卡片区样式 */
+.el-card {
+    box-shadow: 0 1px 30px rgba(0, 8, 10, 0.15) !important;
+}
+.el-card-two{
+    width: 100%;
+    border: 0;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    box-shadow: 0 1px 20px -6px rgba(0,0,0,0.5) !important;
+}
+
+/* 表格样式 */
+.el-table {
+    margin-top: 15px;
+    font-size: 17px;
+    min-width: 350px;
+}
+
+/* 滚动条整体 */
+body::-webkit-scrollbar {
+    width: 10px;
+}
+/* .el-main::-webkit-scrollbar {
+    width: 10px;
+} */
+
+/* 滚动条滑块  */
+body::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #5ed4f6;
+}
+/* .el-main::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #5ed4f6;
+} */
+
+/* 滚动条轨道  */
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: #d8f3ff;
+}
+/* .el-main::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: #d8f3ff;
+} */
+
+/* 表格滚动条整体 */
+.el-table__body-wrapper::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* 滚动条滑块  */
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #5ed4f6;
+}
+
+/* 图标样式 */
+.icon {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: -0.25em;
+}
+
+/* 设置 */
+@keyframes rot {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+.settings{
+    animation: rot 2s infinite linear;
+}
+
+/* 全局字体 */
+.font-style{
+    font-size: 20px;
+}
+/* 表单头字体 */
+.el-form-item__label{
+    font-size: 18px;
+    color: rgb(26, 24, 24);
+}
+/* 全局手形样式 */
+.cus{
+    cursor: pointer;
+}
+.cus2:hover{
+    cursor: pointer;
+    color: pink;
+}
+.cus3:hover{
+    cursor: pointer;
+    color: skyblue;
+}
+
+/* 图片样式 */
+.zoom-effect {
+    overflow: hidden;
+    transition: transform 0.5s ease;
+}
+
+/* 底部样式 */
+.el-footer {
+    background: linear-gradient(to right, rgb(255, 187, 139), rgb(255, 203, 212));
+    color: #333;
+    text-align: center;
+    line-height: 60px;
+}
+
+/* 全局左侧 */
+.aside-content {
+    width: calc(30% - 40px);
+    height: 90%;
+    margin-top: 40px;
+    margin-right: 40px;
+    max-width: 300px;
+    float: right;
+}
+.page-container {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    height: 95%;
+    padding: 0 20px 40px 20px;
+    margin: 0 auto;
+    flex-direction: row;
+}
+.follow-but {
+    display: block;
+    background-color: #39c5bb;
+    height: 35px;
+    width: 60%;
+    margin: 5px auto;
+    border-radius: 18px;
+    /* padding-top: 1%; */
+    line-height: 35px;
+    color: white;
+    cursor: pointer;
+}
+.wz-counts {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+.wz-counts:hover {
+    color: #2E95FB;
+}
+/* 主页左侧小图标样式 */
+.icon-st{
+    width: 1.4em;
+    height: 1.4em;
+    margin-right: 5px;
+}
+
+/* 左侧子项样式 */
+.aside-items-sty{
+    text-align: left;
+    margin-top: 15px;
+    font-size: 17px;
+}
+.article-review-divsty{
+    border-bottom: 1px dashed green;
+    padding-bottom: 10px;
+    margin-top: 10px;
+}
+.article-tit{
+    margin: 0 5px 5px 80px;
+    overflow: hidden;
+    height: 70px;
+}
+.article-tit-one{
+    word-break: break-all;
+    white-space: nowrap;
+    height: 39px;
+    overflow: hidden;
+    padding-top: 11px;
+    text-overflow: ellipsis;
+}
+.article-tit-two{
+    font-size: 15px;
+    margin-top: 7px;
+    color: #50af93;
+}
+.review-tit-one{
+    font-size: 15px;
+    color: #909399;
+}
+.article-one-title:hover{
+    color: pink;
+}
+.article-two-author:hover{
+    color: pink;
+}
+.review-tit-two{
+    white-space: normal;
+    height: 39px;
+    margin-top: 11px;
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.aside-type{
+    justify-content: center;
+    height: 100%;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 115px;
+}
+.web-count{
+    margin-bottom: 20px;
+}
+.count-num{
+    float: right;
+}
+.aside-img{
+    float: left; 
+    width: 70px; 
+    height: 70px; 
+    overflow: hidden;
+}
+  
+.zoom-effect:hover {
+transform: scale(1.12);
+}
+
+/* 回到顶部样式 */
+.intop:hover {
+    cursor: pointer;
+    color: orange !important;
+}
+
+/* 滚动条两端按钮 
+body::-webkit-scrollbar-button {
+    background-color: green;
+}*/

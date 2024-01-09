@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.violetcai.dao.UserDao">
+
+    <select id="getUserByMessage" resultType="com.cai.violetcai.bean.User">
+        select * from user where username=#{username} and password=#{password} and state = 1
+    </select>
+
+    <select id="getAllUser" resultType="com.cai.violetcai.bean.User">
+        select * from user
+        <if test="username != null">
+            where username like #{username}
+        </if>
+        limit #{pageStart}, #{pageSize}
+    </select>
+
+    <select id="getUserCounts" resultType="int">
+        select count(*) from user
+        <if test="username != null">
+            where username like #{username}
+        </if>
+    </select>
+
+    <select id="getUserIdByName" resultType="int">
+        select user_id from user where username = #{username}
+    </select>
+
+    <update id="updateState">
+        update user set state = #{state} where id = #{id}
+    </update>
+
+    <update id="changeImage">
+        update user set headimage = #{headImg} where id = #{id}
+    </update>
+
+    <insert id="addUser">
+        insert into user(username, password, email, role, state) values (#{username}, #{password}, #{email}, #{role}, #{state})
+    </insert>
+
+    <delete id="deleteUser">
+        delete from user where id = #{id}
+    </delete>
+
+    <select id="getUpdateUser" resultType="com.cai.violetcai.bean.User">
+        select * from user where id = #{id}
+    </select>
+
+    <update id="editUser">
+        update user set username = #{username}, email = #{email} where id = #{id}
+    </update>
+
+</mapper>

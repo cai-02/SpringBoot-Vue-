@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.violetcai.dao.ArticleDao">
+
+    <select id="getAllArticle" resultType="com.cai.violetcai.bean.Article">
+        select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id
+        <if test="title != null">
+            where a.title like #{title}
+        </if>
+        order by a.note_id desc limit #{pageStart}, #{pageSize}
+    </select>
+
+    <select id="getAllArticleByAuthor" resultType="com.cai.violetcai.bean.Article">
+        select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id
+        where a.author = #{author}
+        <if test="title != null">
+            and a.title like #{title}
+        </if>
+        order by a.note_id desc limit #{pageStart}, #{pageSize}
+    </select>
+
+    <select id="getArticleByHeat" resultType="com.cai.violetcai.bean.Article">
+        select * from article order by heat desc limit 0, 5
+    </select>
+
+    <select id="getArticleCounts" resultType="int">
+        select count(*) from notes
+        <if test="author != null">
+            where author = #{author}
+        </if>
+    </select>
+
+    <select id="getArticleCounts2" resultType="int">
+        select count(*) from article
+        <if test="articlename != null">
+            where title like #{articlename}
+        </if>
+    </select>
+
+    <insert id="addArticle">
+        insert into notes(title, author, content, time, category_id, category_name) values (#{title}, #{author}, #{content}, #{time}, #{categoryId}, #{categoryName})
+    </insert>
+
+    <select id="getArticleMessage" resultType="com.cai.violetcai.bean.Article">
+        select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id where note_id = #{id}
+    </select>
+
+    <update id="changeHeat">
+        update article set heat = #{heat} where id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,241 @@
+<template>
+    <el-container>
+        <!-- 头部引用 -->
+        <p-header></p-header>
+        <!-- 内容 -->
+        <el-main>
+            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(http://localhost:9000/files/cover/defaultCover)` }"> <!-- 文章背景图绑定 -->
+                <h1 style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
+                    <span>{{ article.title }}</span>
+                </h1>
+                <h1 style="font-size: 20px; color: white; margin-top: 10px;">
+                    <span>{{ article.type
+                    }}</span>&nbsp;<span>{{ this.articleMessage.time | dateFormat2 }}</span>
+                </h1>
+            </div>
+            <!-- 主内容部分 -->
+            <div class="main-2" style="text-align: center;">
+                <div class="page-container">
+                    <i-aside></i-aside>
+                    <div class="recent-posts" style="width: 60%; margin-top: 5px; position: relative;">
+                        <el-popover placement="top" trigger="hover" content="编辑" v-show="contentShow">
+                            <div class="el-icon-edit" slot="reference" @click="edit()"
+                                style="background: #39c5bb; width: 50px; color: white; padding-left: 1px;
+                        padding-top: 15px; font-size: 19px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
+                        </el-popover>
+                        <el-popover placement="top" trigger="hover" content="确认" v-show="contentShow2">
+                            <div class="el-icon-check" slot="reference" @click="edit()"
+                                style="background: #39c5bb; font-weight: bolder; width: 50px; color: white; padding-left: 1px;
+                        padding-top: 12px; font-size: 25px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
+                        </el-popover>
+                        <el-card style="margin: 0 auto; height: 100%;" class="el-card-two" v-show="contentShow">
+                            <div v-html="content" style="text-align: left; margin: -8px 0px 20px 10px; font-size: 18px;">
+
+                            </div>
+                        </el-card>
+                        <!-- 编辑区 -->
+                        <el-card style="margin-left: 0px; border-radius: 10px; text-align: left;" v-show="contentShow2">
+                            <div>
+                                <el-form :inline="true" class="demo-form-inline">
+                                    <el-form-item label="标题" style="margin-right: 20px;">
+                                        <el-input v-model="article.title" placeholder="输入笔记标题"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="类型">
+                                        <el-select v-model="article.type" placeholder="选择类型">
+                                            <el-option label="默认" value="默认"></el-option>
+                                            <el-option label="学习人生" value="学习人生"></el-option>
+                                            <el-option label="笔记" value="笔记"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item style="margin-right: 0; float: right;">
+                                        <el-popover placement="top" width="160" v-model="visible">
+                                            <p>确定要清空内容吗？</p>
+                                            <div style="text-align: center; margin: 0">
+                                                <el-button type="primary" size="mini" @click="clean()">确定</el-button>
+                                                <el-button size="mini" type="" @click="visible = false">取消</el-button>
+                                            </div>
+                                            <el-button type="primary" slot="reference">清空</el-button>
+                                        </el-popover>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
+                            <div style="border: 1px solid #ccc;">
+                                <Toolbar style="border-bottom: 1px solid #ccc" :editor="editor"
+                                    :defaultConfig="toolbarConfig" :mode="mode" />
+                                <Editor style="min-height: 500px; overflow-y: hidden; font-size: 18px;" v-model="html"
+                                    :defaultConfig="editorConfig" :mode="mode" @onCreated="onCreated" />
+                            </div>
+                            <!-- <div style="text-align: center; padding-top: 15px;">
+                            <el-button type="primary" @click="publish()">发布</el-button>
+                        </div> -->
+                        </el-card>
+
+                    </div>
+                </div>
+            </div>
+            <!-- 底部 -->
+            <el-footer>Copyright © 2023 <span>violet蔡</span> All rights reserved</el-footer>
+        </el-main>
+        <div style="position: fixed; bottom: 70px; right: 14px;" @click="intop" text="向上">
+            <i class="el-icon-top intop" style="font-size: 40px; color: #4fc5f6; font-weight: bold;"></i>
+        </div>
+        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
+            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
+                <use xlink:href="#icon-shezhitianchong"></use>
+            </svg>
+        </div>
+    </el-container>
+</template>
+  
+<script>
+import { startSakura, stopp, staticx } from "@/assets/js/sakura"
+import Vue from 'vue'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import Header from '../components/header.vue'
+import LeftAside from '../components/left.vue'
+
+export default Vue.extend({
+    components: {
+        "p-header": Header,
+        "i-aside": LeftAside,
+        Editor,
+        Toolbar
+    },
+    data() {
+        return {
+            artId: 0,
+            articleMessage: [],
+            content: "",
+            artImage: "",
+            contentShow: true,
+            contentShow2: false,
+            editor: null,
+            html: '<p></p>',
+            toolbarConfig: {},
+            editorConfig: { placeholder: '请输入内容...' },
+            mode: 'default', // or 'simple'
+            visible: false,
+            article: {
+                title: "",
+                author: "",
+                content: "",
+                time: "",
+                cover: "",
+                type: "",
+                introduce: ""
+            },
+        };
+    },
+    created() {
+        const herf = window.location.href.split("=");
+        this.getArticle(herf[herf.length - 1]);
+        window.scrollTo(0, 0);
+    },
+    methods: {
+        onCreated(editor) {
+            this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+        },
+        //清空
+        clean() {
+            this.html = "<p><br></p>"
+            this.visible = false
+        },
+        //获取当前文章信息
+        async getArticle(id) {
+            this.artId = id
+            const { data: res } = await this.$http.get(`articleMessage?id=${this.artId}`);
+            this.articleMessage = res;
+            this.content = this.articleMessage.content;
+            this.html = this.articleMessage.content;
+            this.article.title = this.articleMessage.title;
+            this.article.type = this.articleMessage.categoryName;
+        },
+        //回到顶部
+        intop() {
+            this.$refs.targetDiv.scrollIntoView({ behavior: 'smooth' });
+        },
+        //编辑
+        edit() {
+            this.contentShow = !this.contentShow;
+            this.contentShow2 = !this.contentShow2;
+        },
+        sakuraChange() {  //落樱效果切换
+            if (staticx) {
+                stopp();
+            } else {
+                startSakura();
+            }
+        },
+    },
+    //监听路由变化，刷新页面数据
+    watch: {
+        '$route'(to, from) {
+            this.$refs.targetDiv.scrollIntoView({ behavior: 'auto' });
+            const herf = window.location.href.split("=");
+            this.getArticle(herf[herf.length - 1]);
+        }
+    },
+    mounted() {
+
+    },
+    beforeDestroy() {
+        const editor = this.editor
+        if (editor == null) return
+        editor.destroy() // 组件销毁时，及时销毁编辑器
+    }
+
+})
+</script>
+
+<style lang="less" scoped>
+.el-container {
+    padding: 0;
+    margin: 0;
+}
+
+.el-main {
+    padding: 0;
+    overflow: hidden;
+}
+
+.main-1 {
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    height: 11%;
+    width: 100%;
+    z-index: -4;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+.main-2 {
+    background: linear-gradient(rgba(231, 247, 245, 0.7), rgba(237, 255, 237, 0.7));
+    width: 100%;
+    z-index: -3;
+}
+
+.page-container {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.aside-content {
+    margin-top: 5px;
+}
+
+.el-card-two {
+    width: 100%;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    box-shadow: 0 1px 15px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+.el-icon-edit:hover {
+    background: orange !important;
+}
+</style>
