@@ -134,7 +134,7 @@ export default Vue.extend({
             this.notes.time = nowTime;
             this.notes.content = this.html;
 
-            this.notes.userId = sessionStorage.getItem("userId");
+            this.notes.userId = sessionStorage.getItem("userId"); //无用
 
             const { data: res } = await this.$http.post("/addArticle", this.notes)    //访问后台
             if (res == "success") {

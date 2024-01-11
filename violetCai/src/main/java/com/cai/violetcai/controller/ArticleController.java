@@ -87,4 +87,14 @@ public class ArticleController {
         return res_articleMessage;
     }
 
+    //笔记更新
+    @RequestMapping("/updateArticle")
+    public String updateArticle(@RequestBody Article notes){
+        int userId = userDao.getUserIdByName(notes.getAuthor());
+        int categoryId = categoryDao.getCategoryId(userId, notes.getCategoryName());
+        notes.setCategoryId(categoryId);
+        int i = articleDao.updateArticle(notes);
+        return i > 0 ? "success":"error";
+    }
+
 }

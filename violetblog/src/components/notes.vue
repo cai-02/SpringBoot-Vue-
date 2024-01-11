@@ -9,7 +9,7 @@
                     <span>{{ article.title }}</span>
                 </h1>
                 <h1 style="font-size: 20px; color: white; margin-top: 10px;">
-                    <span>{{ article.type
+                    <span>{{ article.categoryName
                     }}</span>&nbsp;<span>{{ this.articleMessage.time | dateFormat2 }}</span>
                 </h1>
             </div>
@@ -24,12 +24,12 @@
                         padding-top: 15px; font-size: 19px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
                         </el-popover>
                         <el-popover placement="top" trigger="hover" content="确认" v-show="contentShow2">
-                            <div class="el-icon-check" slot="reference" @click="edit()"
+                            <div class="el-icon-check" slot="reference" @click="save()"
                                 style="background: #39c5bb; font-weight: bolder; width: 50px; color: white; padding-left: 1px;
                         padding-top: 12px; font-size: 25px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
                         </el-popover>
                         <el-card style="margin: 0 auto; height: 100%;" class="el-card-two" v-show="contentShow">
-                            <div v-html="content" style="text-align: left; margin: -8px 0px 20px 10px; font-size: 18px;">
+                            <div v-html="this.article.content" style="text-align: left; margin: -8px 0px 20px 10px; font-size: 18px;">
 
                             </div>
                         </el-card>
@@ -41,7 +41,7 @@
                                         <el-input v-model="article.title" placeholder="输入笔记标题"></el-input>
                                     </el-form-item>
                                     <el-form-item label="类型">
-                                        <el-select v-model="article.type" placeholder="选择类型">
+                                        <el-select v-model="article.categoryName" placeholder="选择类型">
                                             <el-option label="默认" value="默认"></el-option>
                                             <el-option label="学习人生" value="学习人生"></el-option>
                                             <el-option label="笔记" value="笔记"></el-option>
@@ -93,6 +93,7 @@ import Vue from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import Header from '../components/header.vue'
 import LeftAside from '../components/left.vue'
+import moment from 'moment'
 
 export default Vue.extend({
     components: {
@@ -105,7 +106,6 @@ export default Vue.extend({
         return {
             artId: 0,
             articleMessage: [],
-            content: "",
             artImage: "",
             contentShow: true,
             contentShow2: false,
@@ -116,13 +116,13 @@ export default Vue.extend({
             mode: 'default', // or 'simple'
             visible: false,
             article: {
+                noteId: 0,
                 title: "",
                 author: "",
                 content: "",
                 time: "",
-                cover: "",
-                type: "",
-                introduce: ""
+                categoryId: 0,
+                categoryName: "",
             },
         };
     },
@@ -130,6 +130,7 @@ export default Vue.extend({
         const herf = window.location.href.split("=");
         this.getArticle(herf[herf.length - 1]);
         window.scrollTo(0, 0);
+        this.article.noteId = herf[herf.length - 1]
     },
     methods: {
         onCreated(editor) {
@@ -145,10 +146,12 @@ export default Vue.extend({
             this.artId = id
             const { data: res } = await this.$http.get(`articleMessage?id=${this.artId}`);
             this.articleMessage = res;
-            this.content = this.articleMessage.content;
+            this.article.content = this.articleMessage.content;
+            //console.log(res)
+            //编辑区信息获取
             this.html = this.articleMessage.content;
             this.article.title = this.articleMessage.title;
-            this.article.type = this.articleMessage.categoryName;
+            this.article.categoryName = this.articleMessage.categoryName;
         },
         //回到顶部
         intop() {
@@ -156,8 +159,25 @@ export default Vue.extend({
         },
         //编辑
         edit() {
+            this.contentShow = !this.contentShow;    //视图切换
+            this.contentShow2 = !this.contentShow2;
+        },
+        //保存
+        async save(){
             this.contentShow = !this.contentShow;
             this.contentShow2 = !this.contentShow2;
+            //当前时间获取
+            var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+            this.article.author = JSON.parse(sessionStorage.getItem("user")).username;
+            this.article.time = nowTime;
+            this.article.content = this.html;
+
+            const { data: res } = await this.$http.post("/updateArticle", this.article)    //访问后台
+            if (res == "success") {
+                this.$message.success("更新成功！")
+            } else {
+                this.$message.error("更新失败！")
+            }
         },
         sakuraChange() {  //落樱效果切换
             if (staticx) {

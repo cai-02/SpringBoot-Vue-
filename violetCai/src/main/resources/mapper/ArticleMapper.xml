@@ -46,8 +46,8 @@
         select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id where note_id = #{id}
     </select>
 
-    <update id="changeHeat">
-        update article set heat = #{heat} where id = #{id}
+    <update id="updateArticle">
+        update notes set title=#{title}, content=#{content}, time=#{time}, category_id=#{categoryId}, category_name=#{categoryName} where note_id=#{noteId}
     </update>
 
 </mapper>
