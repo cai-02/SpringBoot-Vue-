@@ -26,6 +26,22 @@ Vue.filter('dateFormat2', function (dateStr,pattern = "YYYY-MM-DD") {
   return moment(dateStr).format(pattern);
 })
 //时间三
+Vue.filter('dateFormat3', function(value) {
+  const currentTime = new Date();
+  const previousTime = new Date(value);
+  const timeDifference = currentTime - previousTime;
+  const minutes = Math.floor(timeDifference / (60 * 1000));
+  const hours = Math.floor(timeDifference / (60 * 60 * 1000));
+  const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+  if (minutes < 60) {
+    return `${minutes}分钟前`;
+  } else if (hours < 24) {
+    return `${hours}小时前`;
+  } else {
+    return `${days}天前`;
+  }
+});
+//时间四
 export function formatDate(fmt, datestr) {
   var date = new Date(datestr);
   let ret;

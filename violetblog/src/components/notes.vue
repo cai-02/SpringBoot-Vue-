@@ -42,9 +42,7 @@
                                     </el-form-item>
                                     <el-form-item label="类型">
                                         <el-select v-model="article.categoryName" placeholder="选择类型">
-                                            <el-option label="默认" value="默认"></el-option>
-                                            <el-option label="学习人生" value="学习人生"></el-option>
-                                            <el-option label="笔记" value="笔记"></el-option>
+                                            <el-option v-for="item in category" :value="item.categoryName" :label="item.categoryName"></el-option>
                                         </el-select>
                                     </el-form-item>
                                     <el-form-item style="margin-right: 0; float: right;">
@@ -115,6 +113,7 @@ export default Vue.extend({
             editorConfig: { placeholder: '请输入内容...' },
             mode: 'default', // or 'simple'
             visible: false,
+            userId: 0,
             article: {
                 noteId: 0,
                 title: "",
@@ -124,13 +123,16 @@ export default Vue.extend({
                 categoryId: 0,
                 categoryName: "",
             },
+            category: [],
         };
     },
     created() {
         const herf = window.location.href.split("=");
         this.getArticle(herf[herf.length - 1]);
         window.scrollTo(0, 0);
-        this.article.noteId = herf[herf.length - 1]
+        this.article.noteId = herf[herf.length - 1];
+        this.userId = JSON.parse(sessionStorage.getItem("userId"));   //获取用户id
+        this.loadCategory()  //加载类别
     },
     methods: {
         onCreated(editor) {
@@ -153,6 +155,11 @@ export default Vue.extend({
             this.article.title = this.articleMessage.title;
             this.article.categoryName = this.articleMessage.categoryName;
         },
+        //获取类型
+        async loadCategory() {
+            const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
+            this.category = res.data;
+        },
         //回到顶部
         intop() {
             this.$refs.targetDiv.scrollIntoView({ behavior: 'smooth' });
@@ -172,7 +179,7 @@ export default Vue.extend({
             this.article.time = nowTime;
             this.article.content = this.html;
 
-            const { data: res } = await this.$http.post("/updateArticle", this.article)    //访问后台
+            const { data: res } = await this.$http.put("/updateArticle", this.article)    //访问后台
             if (res == "success") {
                 this.$message.success("更新成功！")
             } else {

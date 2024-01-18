@@ -22,6 +22,21 @@ body,
     border-radius: 10px;
     box-shadow: 0 1px 20px -6px rgba(0,0,0,0.5) !important;
 }
+.el-card-three{
+    width: 100%;
+    border: 0;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 1px 20px -6px rgba(0,0,0,0.5) !important;
+}
+.el-card-four{
+    width: 100%;
+    border: 0;
+    margin-bottom: 40px;
+    margin-top: 40px;
+    border-radius: 10px;
+    box-shadow: 0 1px 20px -6px rgba(0,0,0,0.5) !important;
+}
 
 /* 表格样式 */
 .el-table {
@@ -183,46 +198,21 @@ body::-webkit-scrollbar-track {
     margin-top: 15px;
     font-size: 17px;
 }
-.article-review-divsty{
+.notes-recent{
     border-bottom: 1px dashed green;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     margin-top: 10px;
 }
-.article-tit{
-    margin: 0 5px 5px 80px;
-    overflow: hidden;
-    height: 70px;
-}
-.article-tit-one{
-    word-break: break-all;
-    white-space: nowrap;
-    height: 39px;
-    overflow: hidden;
-    padding-top: 11px;
-    text-overflow: ellipsis;
-}
-.article-tit-two{
-    font-size: 15px;
-    margin-top: 7px;
-    color: #50af93;
-}
-.review-tit-one{
-    font-size: 15px;
-    color: #909399;
-}
-.article-one-title:hover{
+.notes-one-title:hover{
     color: pink;
 }
-.article-two-author:hover{
-    color: pink;
-}
-.review-tit-two{
+.notes-tit-two{
+    width: 170px;
+    float: left;
     white-space: normal;
-    height: 39px;
-    margin-top: 11px;
     word-break: break-all;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

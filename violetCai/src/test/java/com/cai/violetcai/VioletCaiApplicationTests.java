@@ -2,6 +2,7 @@ package com.cai.violetcai;
 
 import com.alibaba.fastjson.JSON;
 import com.cai.violetcai.bean.Article;
+import com.cai.violetcai.bean.Category;
 import com.cai.violetcai.dao.ArticleDao;
 import com.cai.violetcai.dao.CategoryDao;
 import org.junit.jupiter.api.Test;
@@ -23,10 +24,11 @@ class VioletCaiApplicationTests {
 
     @Test
     void contextLoads() {
-
-        int categoryNameById = categoryDao.getCategoryNameById(2, "学习人生");
-        System.out.println(categoryNameById);
-
+        List<Article> articles = articleDao.getArticleByTime("violet2");
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("data", articles);
+        String res_String = JSON.toJSONString(res);
+        System.out.println(res_String);
     }
 
 }

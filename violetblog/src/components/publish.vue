@@ -34,9 +34,8 @@
                                 </el-form-item>
                                 <el-form-item label="类型">
                                     <el-select v-model="notes.categoryName" placeholder="选择类型">
-                                        <el-option label="默认" value="默认"></el-option>
-                                        <el-option label="学习人生" value="学习人生"></el-option>
-                                        <el-option label="笔记" value="笔记"></el-option>
+                                        <el-option v-for="item in category" :value="item.categoryName"
+                                            :label="item.categoryName"></el-option>
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item style="margin-right: 0; float: right;">
@@ -105,6 +104,8 @@ export default Vue.extend({
                 categoryName: "",
                 userId: 0,
             },
+            category: [],
+            userId: 0,
             visible: false,
             //验证对象
             // publishRules: {
@@ -121,6 +122,8 @@ export default Vue.extend({
     },
     created() {
         window.scrollTo(0, 0);
+        this.userId = JSON.parse(sessionStorage.getItem("userId"));   //获取用户id
+        this.loadCategory()  //加载类别
     },
     methods: {
         onCreated(editor) {
@@ -149,7 +152,12 @@ export default Vue.extend({
             this.html = "<p><br></p>"
             this.visible = false
         },
-        //图片上次设置
+        //获取类型
+        async loadCategory() {
+            const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
+            this.category = res.data;
+        },
+        //图片上传设置
         beforeAvatarUpload(file) {
             const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
             const isPNG = file.type === 'image/png';

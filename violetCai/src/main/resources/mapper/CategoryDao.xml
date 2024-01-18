@@ -7,4 +7,16 @@
         SELECT category_id FROM category where user_id = #{userId} and category_name = #{cateName};
     </select>
 
+    <select id="getAllCategoryByUserId" resultType="com.cai.violetcai.bean.Category">
+        SELECT * FROM category where user_id = #{userId} order by category_id desc
+    </select>
+
+    <select id="getCategoryCount" resultType="int">
+        select count(*) from category where user_id = #{userId}
+    </select>
+
+    <insert id="addCategory">
+        insert into category(category_name, user_id) values (#{categoryName}, #{userId})
+    </insert>
+
 </mapper>

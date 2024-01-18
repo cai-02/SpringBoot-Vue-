@@ -174,7 +174,7 @@ export default {
             articleCounts: 0,    //文章总数
             artTitle: "",       //查询信息
             artPageStart: 1,     //起始页
-            artPageSize: 7,    //每页文章数
+            artPageSize: 10,    //每页文章数
             but_color: "blue",
             isBackground: true,
             author: "",

@@ -20,8 +20,8 @@
         order by a.note_id desc limit #{pageStart}, #{pageSize}
     </select>
 
-    <select id="getArticleByHeat" resultType="com.cai.violetcai.bean.Article">
-        select * from article order by heat desc limit 0, 5
+    <select id="getArticleByTime" resultType="com.cai.violetcai.bean.Article">
+        SELECT * FROM notes where author=#{author} ORDER BY time DESC LIMIT 5
     </select>
 
     <select id="getArticleCounts" resultType="int">

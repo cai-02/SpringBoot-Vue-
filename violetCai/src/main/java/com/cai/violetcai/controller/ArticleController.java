@@ -87,6 +87,16 @@ public class ArticleController {
         return res_articleMessage;
     }
 
+    //查询最近更改的文章
+    @RequestMapping("/getArticleByTime")
+    public String getArticleByTime(@RequestParam("author") String author){
+        List<Article> articles = articleDao.getArticleByTime(author);
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("data", articles);
+        String res_String = JSON.toJSONString(res);
+        return res_String;
+    }
+
     //笔记更新
     @RequestMapping("/updateArticle")
     public String updateArticle(@RequestBody Article notes){

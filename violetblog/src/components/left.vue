@@ -31,47 +31,63 @@
                 <span>网站维护中，暂不可用！</span>
             </div>
         </el-card>
-        <!-- 最新发布 -->
+        <!-- 最近更改 -->
         <el-card class="preson-message el-card-two">
             <div style="text-align: left;">
-                <svg class="icon icon-st" aria-hidden="true">
+                <svg class="icon icon-st" aria-hidden="true" style="margin-left: -2px;">
                     <use xlink:href="#icon-wenzhang"></use>
                 </svg>
-                <span style="font-size: 20px;">最新发布</span>
+                <span style="font-size: 20px;">最近更改</span>
             </div>
-            <div v-for="(item, index) in articleList" :key="index">
-                <div class="aside-items-sty">
-                    <!-- 列表 -->
-                    <div class="article-review-divsty">
-                        <div class="aside-img" @click="toArticle(item.id)">
-                            <img class="cus zoom-effect" :src="item.cover" width="70px" height="70px" />
+            <div v-for="(item, index) in articleListByTime" :key="index" class="aside-items-sty">
+                <!-- 列表 -->
+                <div class="notes-recent">
+                    <div class="notes-tit" style="height: 30px; padding: 6px 0 6px 0;">
+                        <div class="notes-tit-two">
+                            <span class="notes-one-title cus" @click="toArticle(item.noteId)">{{ item.title }}</span>
                         </div>
-                        <div class="article-tit">
-                            <div class="article-tit-one" @click="toArticle(item.id)">
-                                <span class="article-one-title cus">{{ item.title }}</span>
-                            </div>
-                            <div class="article-tit-two">
-                                <span class="article-two-author cus">{{ item.author }}&emsp;</span>
-                                <span>{{ item.time | formatDate2 }}</span>
-                            </div>
+                        <div class="notes-tit-one" style="float: right; font-size: 15px; color: gray;">
+                            <span>{{ item.time | dateFormat3 }}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </el-card>
         <!-- 分类 -->
-        <el-card class="preson-message el-card-two" style="background-color: rgba(239 168 137); height: 160px;">
-            <div class="aside-type">
-                <span>学习人生</span>
+        <div class="el-card-two noteA" @click="addDialogVisible = true" style="padding: 22px; height: 55px; width: 100; margin-top: 40px; background: white; display: flex; margin-bottom: 18px;
+                            flex-direction: column; justify-content: center; padding: 16px;">
+            <!-- class="el-icon-orange" -->
+            <div>
+                <span class="xinjian"
+                    style="display: block; margin-top: 4px; font-size: 20px; text-align: left; color: #1ee6a3; position: absolute;">
+                    类别</span>
+                <span class="el-icon-circle-plus-outline" style="display: block; color: #1ee6a3; font-size: 30px;"></span>
             </div>
-        </el-card>
-        <el-card class="preson-message el-card-two" style="background-color: rgb(249 174 174); height: 160px;">
-            <div class="aside-type">
-                <span>随笔</span>
-            </div>
-        </el-card>
+        </div>
+        <div v-for="(item, index) in category" :key="index">
+            <el-card class="preson-message el-card-three"
+                :style="{ 'background-color': getRandomColor(), height: '160px', cursor: 'pointer' }">
+                <div class="aside-type">
+                    <span class="category-name">{{ item.categoryName }}</span>
+                </div>
+            </el-card>
+        </div>
+        <!-- 新增类别区域 -->
+        <div>
+            <el-dialog title="添加用户" :visible.sync="addDialogVisible" @close="addDialogClosed()">
+                <el-form :model="cate" label-width="65px" :rules="addFormRules" ref="cate">
+                    <el-form-item label="名称" prop="categoryName">
+                        <el-input placeholder="请输入分类名" v-model="cate.categoryName"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="addDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="addCate()">确定</el-button>
+                </span>
+            </el-dialog>
+        </div>
         <!-- 相册 -->
-        <el-card class="preson-message el-card-two" style="background-color: #ffefcd;">
+        <el-card class="preson-message el-card-four" style="background-color: #ffefcd;">
             <div style="text-align: left;">
                 <svg class="icon icon-st" aria-hidden="true">
                     <use xlink:href="#icon-xiangce"></use>
@@ -123,45 +139,123 @@ export default ({
         return {
             articleCounts: 0,    //文章总数
             articleList: [],   //文章列表
+            articleListByTime: [],   //根据时间获取
             artTitle: "",       //文章标题
-            artPageStart: 1,     //起始页
-            artPageSize: 7,    //每页文章数
             userName: "",    //将用户信息字符串对象解析为json对象并获取用户名
             headImg: "",
             author: "",
+            userId: 0,
+            category: [],
+            addDialogVisible: false,     //对话框状态
+            cate: {
+                categoryName: "",
+                userId: 0,
+            },
+            addFormRules: {
+                categoryName: [
+                    { required: true, message: '请输入分类名', trigger: 'blur' },
+                    { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }
+                ],
+            }
         };
     },
     created() {
-        this.getUserList();
+        this.getArticleList();
+        this.getArticleByTime();
         if (JSON.parse(sessionStorage.getItem("user")) != null && sessionStorage.getItem("headimage") != null) {
             this.userName = JSON.parse(sessionStorage.getItem("user")).username;
             this.headImg = sessionStorage.getItem("headimage");
         } else {
             return;
         }
+        this.userId = JSON.parse(sessionStorage.getItem("userId"));
+        this.cate.userId = this.userId;
+        //加载类别
+        this.loadCategory();
     },
     methods: {
-        async getUserList() {
+        async getArticleList() {
             this.author = JSON.parse(sessionStorage.getItem("user")).username;
             const { data: res } = await this.$http.get(`getArticle?author=${this.author}&title=''&pageStart=1&pageSize=7`);
             this.articleList = res.data;
-            //console.log(this.articleList)
-            this.articleCounts = res.number;
+            //console.log(JSON.stringify(res.data))
+            this.articleCounts = res.number;  //文章总数
+        },
+        //获取最近更改的笔记
+        async getArticleByTime() {
+            this.author = JSON.parse(sessionStorage.getItem("user")).username;
+            const { data: res } = await this.$http.get(`getArticleByTime?author=${this.author}`);
+            this.articleListByTime = res.data;
+            //console.log(this.articleListByTime)
         },
         //发布
         xinjian() {
             this.$router.push({ path: '/publish' })
         },
+        //加载分类
+        async loadCategory() {
+            const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
+            this.category = res.data;
+        },
+        //随机色
+        getRandomColor() {
+            // 生成稍微深一点的随机RGB颜色
+            const randomColorInRange = () => Math.floor(Math.random() * 100) + 130; // 100-200范围内的稍深颜色
+            const r = randomColorInRange();
+            const g = randomColorInRange();
+            const b = randomColorInRange();
+            return `rgb(${r}, ${g}, ${b})`;
+        },
+        //监听添加用户操作，看是否关闭
+        addDialogClosed() {
+            this.$refs.cate.resetFields();
+        },
+        //添加类别
+        async addCate() {
+            this.$refs.cate.validate(async valid => {
+                if (!valid) return;
+                const { data: res } = await this.$http.post("/addCategory", this.cate)
+                if (res == "success") {
+                    this.$message.success("添加成功！");
+                    this.loadCategory();
+                    this.addDialogVisible = false;
+                } else {
+                    this.$message.error("添加失败！")
+                }
+            });
+        },
+        //去到文章
         toArticle(id) {
             const herf = window.location.href.split("=");
-            if(herf[herf.length - 1] == id){
+            if (herf[herf.length - 1] == id) {
                 location.reload();   //路由重复，刷新当前页
-            }else{
-                this.$router.push({ path: '/articles?id=' + id });
+            } else {
+                this.$router.push({ path: '/notes?id=' + id });
             }
         },
     },
 })
 </script>
+<style lang="less" scoped>
+.noteA:hover {
+    background: #fdd985 !important;
+    cursor: pointer;
+}
 
-<style lang="less" scoped></style>
+.preson-message:hover .category-name {
+    color: pink;
+}
+
+.noteA:hover .xinjian,
+.noteA:hover .el-icon-circle-plus-outline {
+    color: rgb(255, 255, 255) !important;
+}
+
+/deep/ .el-dialog {
+    width: 30%;
+}
+
+/deep/ .el-dialog__body {
+    padding: 20px 20px 0 20px;
+}
+</style>
