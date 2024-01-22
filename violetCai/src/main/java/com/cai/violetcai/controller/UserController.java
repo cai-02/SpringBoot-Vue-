@@ -1,8 +1,10 @@
 package com.cai.violetcai.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.cai.violetcai.bean.Category;
 import com.cai.violetcai.bean.QueryInfo;
 import com.cai.violetcai.bean.User;
+import com.cai.violetcai.dao.CategoryDao;
 import com.cai.violetcai.dao.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,9 @@ public class UserController {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    CategoryDao categoryDao;
 
     @RequestMapping("/alluser")
     public String getUserList(QueryInfo queryInfo){
@@ -45,8 +50,19 @@ public class UserController {
     public String addUser(@RequestBody User user){
         user.setRole("普通用户");
         user.setState(true);
+        user.setHeadimage("http://localhost:9000/files/head/27a2e54976324776bf7b534c93ca2b49");
         int i = userDao.addUser(user);
-        return i > 0 ? "success":"error";
+        if(i > 0) {
+            //创建用户时创建默认分类
+            int userId = userDao.getUserIdByName(user.getUsername());
+            Category category = new Category();
+            category.setUserId(userId);
+            category.setCategoryName("默认");
+            categoryDao.addCategory(category);
+            return "success";
+        }else {
+            return "error";
+        }
     }
 
     @RequestMapping("/deleteuser")

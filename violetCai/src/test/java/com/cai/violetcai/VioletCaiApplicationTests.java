@@ -24,8 +24,12 @@ class VioletCaiApplicationTests {
 
     @Test
     void contextLoads() {
-        List<Article> articles = articleDao.getArticleByTime("violet2");
+        int numbers = articleDao.getArticleCountsByCate("violet", 7);
+        int pageStart = (1 - 1) * 10;
+
+        List<Article> articles = articleDao.getAllArticleByAuthorCate("violet", 7, "%%", pageStart, 10);
         HashMap<String, Object> res = new HashMap<>();
+        res.put("number", numbers);
         res.put("data", articles);
         String res_String = JSON.toJSONString(res);
         System.out.println(res_String);

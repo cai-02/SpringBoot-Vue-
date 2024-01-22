@@ -64,7 +64,8 @@
                 <span class="el-icon-circle-plus-outline" style="display: block; color: #1ee6a3; font-size: 30px;"></span>
             </div>
         </div>
-        <div v-for="(item, index) in category" :key="index">
+        <!-- 类别显示区 -->
+        <div v-for="(item, index) in category" :key="index" @click="toCategory(item.categoryId)">
             <el-card class="preson-message el-card-three"
                 :style="{ 'background-color': getRandomColor(), height: '160px', cursor: 'pointer' }">
                 <div class="aside-type">
@@ -99,7 +100,7 @@
             </div>
         </el-card>
         <!-- 站长统计 -->
-        <el-card class="preson-message el-card-two">
+        <el-card class="preson-message el-card-two" style="margin-bottom: 0;">
             <div style="text-align: left;">
                 <svg class="icon icon-st" aria-hidden="true">
                     <use xlink:href="#icon-tongji"></use>
@@ -196,6 +197,7 @@ export default ({
         async loadCategory() {
             const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
             this.category = res.data;
+            //console.log(this.category)
         },
         //随机色
         getRandomColor() {
@@ -231,6 +233,15 @@ export default ({
                 location.reload();   //路由重复，刷新当前页
             } else {
                 this.$router.push({ path: '/notes?id=' + id });
+            }
+        },
+        //去到分类
+        toCategory(id) {
+            const herf = window.location.href.split("/");
+            if (herf[herf.length - 1] == id) {
+                location.reload();   //路由重复，刷新当前页
+            } else {
+                this.$router.push({ path: '/category/' + id });
             }
         },
     },

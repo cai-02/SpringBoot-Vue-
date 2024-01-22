@@ -171,19 +171,23 @@ export default Vue.extend({
         },
         //保存
         async save(){
-            this.contentShow = !this.contentShow;
-            this.contentShow2 = !this.contentShow2;
-            //当前时间获取
-            var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-            this.article.author = JSON.parse(sessionStorage.getItem("user")).username;
-            this.article.time = nowTime;
-            this.article.content = this.html;
-
-            const { data: res } = await this.$http.put("/updateArticle", this.article)    //访问后台
-            if (res == "success") {
-                this.$message.success("更新成功！")
+            if (this.article.title == "") {
+                this.$message.warning("标题不能为空！")
             } else {
-                this.$message.error("更新失败！")
+                this.contentShow = !this.contentShow;
+                this.contentShow2 = !this.contentShow2;
+                //当前时间获取
+                var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+                this.article.author = JSON.parse(sessionStorage.getItem("user")).username;
+                this.article.time = nowTime;
+                this.article.content = this.html;
+
+                const { data: res } = await this.$http.put("/updateArticle", this.article)    //访问后台
+                if (res == "success") {
+                    this.$message.success("更新成功！")
+                } else {
+                    this.$message.error("更新失败！")
+                }
             }
         },
         sakuraChange() {  //落樱效果切换
@@ -229,7 +233,7 @@ export default Vue.extend({
     background-size: cover;
     display: flex;
     justify-content: center;
-    height: 11%;
+    height: 230px;
     width: 100%;
     z-index: -4;
     flex-direction: column;
@@ -247,7 +251,7 @@ export default Vue.extend({
     display: flex;
     justify-content: center;
     width: 90%;
-    padding: 20px;
+    padding: 20px 20px 40px 20px;
     margin: 0 auto;
 }
 

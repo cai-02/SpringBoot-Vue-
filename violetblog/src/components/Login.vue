@@ -58,22 +58,27 @@
                             <el-input placeholder="请输入密码" v-model="registForm.password" prefix-icon="el-icon-lock"
                                 type="password"></el-input>
                         </el-form-item>
+                        <el-form-item prop="checkPassword">
+                            <el-input placeholder="请确认密码" v-model="registForm.checkPassword" prefix-icon="el-icon-lock"
+                                type="password"></el-input>
+                        </el-form-item>
                         <!-- 邮箱 -->
                         <el-form-item prop="email">
                             <el-input placeholder="请输入邮箱" v-model="registForm.email"
                                 prefix-icon="el-icon-message"></el-input>
                         </el-form-item>
                         <!-- 验证码 -->
-                        <el-form-item prop="yzCode">
+                        <!-- <el-form-item prop="yzCode">
                             <el-input placeholder="请输入验证码" prefix-icon="el-icon-chat-dot-square"></el-input>
-                        </el-form-item>
+                        </el-form-item> -->
                         <!-- 按钮 -->
                         <el-form-item class="btns">
                             <el-button type="primary" @click="regist()">提交</el-button>
                             <el-button type="warning" @click="resetRegistForm()">重置</el-button>
                         </el-form-item>
                     </el-form>
-                    <div style="color: #4bacda; cursor: pointer; float: right;position: absolute; bottom: 15px; right: 10px;" @click="show = !show, show2 = !show2">返回登录></div>
+                    <div style="color: #4bacda; cursor: pointer; float: right;position: absolute; bottom: 15px; right: 10px;"
+                        @click="show = !show, show2 = !show2">返回登录></div>
                 </div>
             </transition>
         </div>
@@ -90,6 +95,15 @@ import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 
 export default {
     data() {
+        var validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.registForm.password) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        };
         return {
             //表单数据对象
             loginForm: {
@@ -99,6 +113,7 @@ export default {
             registForm: {
                 username: "",
                 password: "",
+                checkPassword: "",
                 email: ""
             },
             //验证对象
@@ -111,11 +126,14 @@ export default {
                 //校验密码
                 password: [
                     { required: true, message: '用户密码为必填项', trigger: 'blur' },  //必填项验证
-                    { min: 6, max: 12, message: '长度在 6 ~ 12 个字符', trigger: 'blur' }  //长度验证
+                    { min: 6, max: 12, message: '长度在 6 ~ 12 个字符', trigger: 'blur' },  //长度验证
+                ],
+                //校验确认密码
+                checkPassword: [
+                    { validator: validatePass2, trigger: 'blur' }   
                 ],
                 email: [
                     { required: true, message: '邮箱为必填项', trigger: 'blur' },  //必填项验证
-                    { min: 6, max: 18, message: '长度在 6 ~ 18 个字符', trigger: 'blur' }  //长度验证
                 ],
             },
             //展开动画
@@ -156,11 +174,12 @@ export default {
             //验证校验规则
             this.$refs.registFormRef.validate(async valid => {
                 if (!valid) return;   //校验失败，验证用户名和密码合法性
-                const {data:res} = await this.$http.post("adduser", this.registForm);
-                if(res != "success"){
+                const { data: res } = await this.$http.post("adduser", this.registForm);
+                if (res != "success") {
                     return this.$message.error("注册失败！");
                 }
                 this.$message.success("注册成功！");
+                this.$refs.registFormRef.resetFields();  //清空表单
                 this.show = !this.show;   //返回登录
                 this.show2 = !this.show2
             })
@@ -193,11 +212,12 @@ export default {
     border-radius: 3px;
 }
 
-.login_box{
+.login_box {
     width: 430px;
     height: 350px;
     position: relative;
 }
+
 .registBox {
     width: 430px;
     height: 420px;
@@ -248,7 +268,7 @@ export default {
     padding: 0 10px;
     box-sizing: border-box;
 }
+
 .regist_form {
     bottom: 4%;
-}
-</style>
+}</style>

@@ -20,6 +20,15 @@
         order by a.note_id desc limit #{pageStart}, #{pageSize}
     </select>
 
+    <select id="getAllArticleByAuthorCate" resultType="com.cai.violetcai.bean.Article">
+        select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id
+        where a.author = #{author} and a.category_id = #{categoryId}
+        <if test="title != null">
+            and a.title like #{title}
+        </if>
+        order by a.note_id desc limit #{pageStart}, #{pageSize}
+    </select>
+
     <select id="getArticleByTime" resultType="com.cai.violetcai.bean.Article">
         SELECT * FROM notes where author=#{author} ORDER BY time DESC LIMIT 5
     </select>
@@ -29,6 +38,10 @@
         <if test="author != null">
             where author = #{author}
         </if>
+    </select>
+
+    <select id="getArticleCountsByCate" resultType="int">
+        select count(*) from notes where author = #{author} and category_id = #{categoryId}
     </select>
 
     <select id="getArticleCounts2" resultType="int">

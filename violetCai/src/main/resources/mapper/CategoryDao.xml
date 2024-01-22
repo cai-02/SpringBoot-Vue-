@@ -8,11 +8,15 @@
     </select>
 
     <select id="getAllCategoryByUserId" resultType="com.cai.violetcai.bean.Category">
-        SELECT * FROM category where user_id = #{userId} order by category_id desc
+        SELECT * FROM category where user_id = #{userId}
     </select>
 
     <select id="getCategoryCount" resultType="int">
         select count(*) from category where user_id = #{userId}
+    </select>
+
+    <select id="getCategoryNameById" resultType="String">
+        SELECT category_name FROM category where category_id = #{categoryId}
     </select>
 
     <insert id="addCategory">

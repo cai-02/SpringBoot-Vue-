@@ -10,6 +10,8 @@ import Index from '../components/index.vue'
 import Message from '../components/admin/message.vue'
 import Publish from '../components/publish.vue'
 import Notes from '../components/notes.vue'
+import Category from '../components/category.vue'
+import Catemanage from '../components/catemanage.vue'
 
 Vue.use(VueRouter)
 
@@ -49,6 +51,16 @@ const routes = [
   {
     path: "/notes",
     component: Notes
+  }
+  ,
+  {
+    path: "/category/:id",
+    component: Category
+  }
+  ,
+  {
+    path: "/catemanage",
+    component: Catemanage
   }
   ,
 ]

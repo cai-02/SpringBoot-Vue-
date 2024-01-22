@@ -1,71 +1,18 @@
 <template>
     <el-container>
         <!-- 头部引用 -->
-        <i-header></i-header>
-        <!-- 主体 -->
+        <p-header></p-header>
+        <!-- 内容 -->
         <el-main>
-            <!-- 背景 -->
-            <div class="main-1">
-                <h1 style="font-size: 40px; color: #fee4e0; margin-top: -10px; margin-bottom: 20px;">
-                    <span>风会代替你去往任何地方</span>
+            <div class="main-1" ref="targetDiv"
+                :style="{ backgroundImage: `url(http://localhost:9000/files/cover/defaultCover)` }"> <!-- 文章背景图绑定 -->
+                <h1 style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
+                    <span>{{ this.categoryName }} -> {{ this.noteCounts }}篇</span>
                 </h1>
-                <div class="logot">
-                    <span>{{ te }}|</span>
-                </div>
-            </div>
-            <!-- 箭头 -->
-            <div class="arrow-container"
-                style="top: 86vh; position: absolute; cursor: pointer; margin: auto; left: 0; right: 0; width: 45px;"
-                @click="scrollOneScreen">
-                <i class="el-icon-arrow-down" style="color: white; font-size: 45px; font-weight: 900 !important;"></i>
-            </div>
-            <!-- 波浪效果 -->
-            <div class="bannerWave1">
-                <div class="wave-body">
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                    <div class="waves"></div>
-                    <div class="waves2"></div>
-                </div>
-                <div class="wave-body2">
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                    <div class="waves3"></div>
-                    <div class="waves4"></div>
-                </div>
             </div>
             <!-- 主内容部分 -->
-            <div class="main-2" ref="targetDiv">
+            <div class="main-2" style="text-align: center;">
                 <div class="page-container">
-                    <!-- 左侧侧边栏引用 -->
                     <i-aside></i-aside>
                     <!-- 文章内容部分 -->
                     <div class="recent-posts">
@@ -85,7 +32,7 @@
                                 style="border-bottom: 1px dashed rgb(168, 164, 164); padding-bottom: 8px; margin-bottom: 23px;">
                             </div>
                             <!-- 笔记存放区 -->
-                            <div v-for="(item, index) in articleList" :key="index">
+                            <div v-for="(item, index) in notesList" :key="index">
                                 <el-card class="article-cover el-card-two" body-style="padding: 0">
                                     <div class="parent-div-one" @click="toArticle(item.noteId)">
                                         <div class="parent-div-one">
@@ -132,7 +79,7 @@
                         <div style="margin-top: -10px;">
                             <el-pagination class="msg-pagination-container" :background="isBackground" :pager-count=7
                                 @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="artPageSize"
-                                :total="articleCounts">
+                                :total="noteCounts">
                             </el-pagination>
                         </div>
                     </div>
@@ -151,38 +98,41 @@
         </div>
     </el-container>
 </template>
-
+  
 <script>
 import { startSakura, stopp, staticx } from "@/assets/js/sakura"
+import Vue from 'vue'
 import Header from '../components/header.vue'
 import LeftAside from '../components/left.vue'
 
-export default {
+export default Vue.extend({
     components: {
-        "i-header": Header,
-        "i-aside": LeftAside
+        "p-header": Header,
+        "i-aside": LeftAside,
     },
     data() {
         return {
-            activeIndex: '1',
-            activeIndex2: '1',
-            timer: "",
-            value: 0,
-            te: "",
-            text: "听凭风引，静看花开花落，云卷云舒。",
-            articleList: [],   //文章列表
-            articleCounts: 0,    //文章总数
+            artId: 0,
+            username: "",
+            categoryId: 0,
             artTitle: "",       //查询信息
             artPageStart: 1,     //起始页
-            artPageSize: 10,    //每页文章数
-            but_color: "blue",
+            artPageSize: 10,    //每页笔记数
+            notesList: [],   //笔记列表
+            categoryName: "",
+            noteCounts: 0,     //笔记数量
             isBackground: true,
-            author: "",
         };
     },
     created() {
-        this.start();
-        this.getArticleList();
+        window.scrollTo(0, 0);
+        //类别id
+        const herf = window.location.href.split("/");
+        this.categoryId = herf[herf.length - 1];
+        //用户名
+        this.username = JSON.parse(sessionStorage.getItem("user")).username;   //获取用户名
+
+        this.getNotes();
     },
     methods: {
         //分页触发动作
@@ -191,47 +141,16 @@ export default {
             this.getArticleList();
             this.$refs.targetDiv.scrollIntoView({ behavior: 'smooth' });
         },
-        //获取所有文章
-        async getArticleList() {
-            this.author = JSON.parse(sessionStorage.getItem("user")).username;
-            const { data: res } = await this.$http.get(`getArticle?author=${this.author}&title=${this.artTitle}&pageStart=${this.artPageStart}&pageSize=${this.artPageSize}`);
-            this.articleList = res.data;
-            //console.log(this.articleList)
-            //console.log(res.number)
-            this.articleCounts = res.number;
-        },
-        sakuraChange() {  //落樱效果切换
-            if (staticx) {
-                stopp();
+        //获取笔记
+        async getNotes() {
+            const { data: res } = await this.$http.get(`getArticleByCate?author=${this.username}&categoryId=${this.categoryId}&title=${this.artTitle}&pageStart=${this.artPageStart}&pageSize=${this.artPageSize}`);
+            if (res.data != "") {
+                this.notesList = res.data;
             } else {
-                startSakura();
+                this.notesList = ""
             }
-        },
-        //打字机效果
-        start() {
-            this.timer = setInterval(this.valChange, 100);
-        },
-        valChange() {
-            if (this.value <= this.text.length && this.value >= 0) {
-                this.te = this.text.slice(0, this.value);
-                this.value++;
-            } else {
-                clearInterval(this.timer);
-                setTimeout(() => {
-                    this.timer = setInterval(this.reverseValChange, 70);
-                }, 2000);
-            }
-        },
-        reverseValChange() {
-            if (this.value > 0) {
-                this.value--;
-                this.te = this.text.slice(0, this.value);
-            } else {
-                clearInterval(this.timer);
-                setTimeout(() => {
-                    this.timer = setInterval(this.valChange, 100);
-                }, 2000);
-            }
+            this.categoryName = res.categoryName;
+            this.noteCounts = res.number;
         },
         //新建
         xin() {
@@ -253,45 +172,54 @@ export default {
                 behavior: 'smooth' // 使用平滑滚动效果
             });
         },
-    }
+        sakuraChange() {  //落樱效果切换
+            if (staticx) {
+                stopp();
+            } else {
+                startSakura();
+            }
+        },
+    },
+    //监听路由变化，刷新页面数据
+    watch: {
+        '$route'(to, from) {
+            this.$refs.targetDiv.scrollIntoView({ behavior: 'auto' });
+            //类别id
+            const herf = window.location.href.split("/");
+            this.categoryId = herf[herf.length - 1];
+            //用户名
+            this.username = JSON.parse(sessionStorage.getItem("user")).username;   //获取用户名
+            this.getNotes();
+        }
+    },
+    mounted() {
 
-}
+    },
+
+})
 </script>
 
 <style lang="less" scoped>
-body {
-    overflow-x: hidden !important;
-}
-
 .el-container {
     padding: 0;
+    margin: 0;
 }
 
 .el-main {
     padding: 0;
     overflow: hidden;
-    white-space: nowrap;
 }
 
 .main-1 {
-    background-image: url(../assets/images/zhuti.jpg);
     background-size: cover;
-    color: #333;
-    position: fixed;
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    height: 100%;
+    height: 230px;
     width: 100%;
-    top: 0;
     z-index: -4;
-    // .filter{
-    //     width: 100%;
-    //     height: 100%;
-    //     backdrop-filter: blur(1px);
-    // }
-
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
 }
 
 .main-2 {
@@ -320,110 +248,6 @@ body {
 
 .el-card-two {
     cursor: pointer;
-}
-
-// 水波纹实现
-.bannerWave1 {
-    margin-top: 89vh;
-    height: 85px;
-    background: rgba(255, 255, 255, 0);
-    width: 100%;
-    z-index: -2;
-    position: relative;
-}
-
-.wave-body {
-    position: absolute;
-    height: 100%;
-    width: 200%;
-    margin-top: -45px;
-    margin-left: -100%;
-    animation: m 20s infinite linear;
-}
-
-.wave-body2 {
-    position: absolute;
-    height: 100%;
-    width: 200%;
-    margin-top: -45px;
-    margin-left: -100%;
-    animation: m 15s infinite linear;
-}
-
-.waves {
-    float: left;
-    --c: rgba(255, 255, 255, 0.9);
-    --w1: radial-gradient(90% 59% at top, #0000 100%, var(--c) 100.5%) no-repeat;
-    background: var(--w1);
-    height: 130px;
-    width: 5%;
-    background-size: 100% 100%;
-}
-
-.waves2 {
-    float: left;
-    --c: rgba(255, 255, 255, 0.9);
-    --w2: radial-gradient(90% 60.7% at bottom, var(--c) 100%, #0000 100.5%) no-repeat;
-    background: var(--w2);
-    height: 130px;
-    width: 5%;
-    background-size: 100% 100%;
-}
-
-.waves3 {
-    float: left;
-    --c: rgba(255, 255, 255, 0.3);
-    --w1: radial-gradient(90% 49% at top, #0000 100%, var(--c) 100.5%) no-repeat;
-    background: var(--w1);
-    height: 130px;
-    width: 6.25%;
-    background-size: 100% 100%;
-}
-
-.waves4 {
-    float: left;
-    --c: rgba(255, 255, 255, 0.3);
-    --w2: radial-gradient(90% 70.7% at bottom, var(--c) 100%, #0000 100.5%) no-repeat;
-    background: var(--w2);
-    height: 130px;
-    width: 6.25%;
-    background-size: 100% 100%;
-}
-
-@keyframes m {
-    0% {
-        margin-left: -100%
-    }
-
-    100% {
-        margin-left: 0%
-    }
-}
-
-.logot {
-    padding: 12px;
-    font-size: 23px;
-    color: rgb(254, 228, 224);
-    background-color: rgba(0, 0, 0, 0.4) !important;
-    border-radius: 10px;
-}
-
-// 箭头移动
-.arrow-container {
-    position: relative;
-    animation: floatAnimation 2s infinite ease-in-out;
-}
-
-@keyframes floatAnimation {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(35px);
-    }
 }
 
 // 内容卡片样式一
@@ -456,41 +280,6 @@ body {
     }
 }
 
-// 内容卡片样式二
-.parent-div-two {
-    width: 100%;
-    height: 280px;
-    position: relative;
-
-    .triangle-div {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-    }
-
-    .left {
-        clip-path: polygon(0% 0%, 40% 0%, 60% 100%, 0% 100%);
-    }
-
-    .right {
-        clip-path: polygon(40% 0%, 100% 0%, 100% 100%, 60% 100%);
-    }
-
-    .content-text {
-        width: 60%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        padding: 15px 15px 15px 30px;
-        float: right;
-        align-items: end;
-        white-space: normal;
-        text-align: right;
-    }
-}
-
-// 标题
 .content-title {
     overflow: hidden;
     font-weight: bold;
@@ -533,7 +322,6 @@ body {
     margin-top: 5px;
 }
 
-// 右下角
 .intop:hover {
     cursor: pointer;
     color: orange !important;

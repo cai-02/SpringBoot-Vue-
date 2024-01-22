@@ -32,8 +32,8 @@
                                 <el-form-item label="标题" style="margin-right: 20px;">
                                     <el-input v-model="notes.title" placeholder="输入笔记标题"></el-input>
                                 </el-form-item>
-                                <el-form-item label="类型">
-                                    <el-select v-model="notes.categoryName" placeholder="选择类型">
+                                <el-form-item label="分类">
+                                    <el-select v-model="notes.categoryName" placeholder="选择分类">
                                         <el-option v-for="item in category" :value="item.categoryName"
                                             :label="item.categoryName"></el-option>
                                     </el-select>
@@ -107,17 +107,6 @@ export default Vue.extend({
             category: [],
             userId: 0,
             visible: false,
-            //验证对象
-            // publishRules: {
-            //     //校验用户名
-            //     title: [
-            //         { required: true, message: '标题不能为空', trigger: 'blur' },  //必填项验证
-            //         { min: 1, max: 20, message: '长度必须在 1 到 20 个字符之间', trigger: 'blur' }  //长度验证
-            //     ],
-            //     type: [
-            //         { required: true, message: '类型不能为空', trigger: 'change' },  //必填项验证
-            //     ],
-            // },
         };
     },
     created() {
@@ -139,12 +128,16 @@ export default Vue.extend({
 
             this.notes.userId = sessionStorage.getItem("userId"); //无用
 
-            const { data: res } = await this.$http.post("/addArticle", this.notes)    //访问后台
-            if (res == "success") {
-                this.$message.success("保存成功！")
-                this.$router.push({ path: "/index" });
+            if (this.notes.title == "") {
+                this.$message.warning("标题不能为空！")
             } else {
-                this.$message.error("保存失败！")
+                const { data: res } = await this.$http.post("/addArticle", this.notes)    //访问后台
+                if (res == "success") {
+                    this.$message.success("保存成功！")
+                    this.$router.go(-1)
+                } else {
+                    this.$message.error("保存失败！")
+                }
             }
         },
         //清空
@@ -156,6 +149,7 @@ export default Vue.extend({
         async loadCategory() {
             const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
             this.category = res.data;
+            this.notes.categoryName = this.category[0].categoryName
         },
         //图片上传设置
         beforeAvatarUpload(file) {

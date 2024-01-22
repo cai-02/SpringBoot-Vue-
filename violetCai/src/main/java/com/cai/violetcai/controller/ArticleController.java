@@ -8,10 +8,7 @@ import com.cai.violetcai.dao.ArticleDao;
 import com.cai.violetcai.dao.CategoryDao;
 import com.cai.violetcai.dao.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -105,6 +102,24 @@ public class ArticleController {
         notes.setCategoryId(categoryId);
         int i = articleDao.updateArticle(notes);
         return i > 0 ? "success":"error";
+    }
+
+    //获取全部个人笔记数据（根据用户名及类别）
+    @RequestMapping("/getArticleByCate")
+    public String getArticleList(String author, int categoryId, String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize){
+        //获取最大列表数和当前页编号
+        int numbers = articleDao.getArticleCountsByCate(author, categoryId);
+        int pageStart = (pageNum - 1) * pageSize;
+        //获取类别名
+        String categoryName = categoryDao.getCategoryNameById(categoryId);
+
+        List<Article> articles = articleDao.getAllArticleByAuthorCate(author, categoryId, "%" + title + "%", pageStart, pageSize);
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("number", numbers);
+        res.put("data", articles);
+        res.put("categoryName", categoryName);
+        String res_String = JSON.toJSONString(res);
+        return res_String;
     }
 
 }

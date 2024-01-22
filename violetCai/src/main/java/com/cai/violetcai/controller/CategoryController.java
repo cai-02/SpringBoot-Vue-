@@ -38,6 +38,7 @@ public class CategoryController {
         return res_cateMessage;
     }
 
+    //新增分类
     @RequestMapping("/addCategory")
     public String addCategory(@RequestBody Category category){
         int i = categoryDao.addCategory(category);

@@ -35,7 +35,7 @@
     </update>
 
     <insert id="addUser">
-        insert into user(username, password, email, role, state) values (#{username}, #{password}, #{email}, #{role}, #{state})
+        insert into user(username, password, email, role, state, headimage) values (#{username}, #{password}, #{email}, #{role}, #{state}, #{headimage})
     </insert>
 
     <delete id="deleteUser">

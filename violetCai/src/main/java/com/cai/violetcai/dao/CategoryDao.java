@@ -12,6 +12,8 @@ public interface CategoryDao {
     public int getCategoryId(int userId, String cateName);
     //获取用户全部类别
     public List<Category> getAllCategoryByUserId(@Param("userId") int id);
+    //类别id查类别名
+    public String getCategoryNameById(int categoryId);
     //获取类别总数
     public int getCategoryCount(@Param("userId") int id);
     //添加类别
