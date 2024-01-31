@@ -7,9 +7,10 @@
                     <div class="avatar_box">
                         <img src="../assets/logo.jpg" alt />
                     </div>
-                    <div style="font-size: 30px; width: 75px; margin: auto; margin-top: 20%;">登 录</div>
+                    <div style="font-size: 30px; width: 75px; margin: auto; margin-top: 85px;">登 录</div>
                     <!-- 表单区域 -->
-                    <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login_form" label-width="0">
+                    <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login_form" label-width="0"
+                        style="top: 140px;">
                         <!-- 用户名 -->
                         <el-form-item prop="username">
                             <el-input placeholder="请输入用户名" v-model="loginForm.username"
@@ -20,10 +21,17 @@
                             <el-input placeholder="请输入密码" v-model="loginForm.password" prefix-icon="el-icon-lock"
                                 type="password" show-password></el-input>
                         </el-form-item>
+                        <!-- 记住我 -->
+                        <el-form-item class="btns" style="margin-top: -15px; margin-bottom: 0; float: right;">
+                            <input type="checkbox" id="rememberMe" v-model="rememberMe" />
+                            <label for="rememberMe">记住我</label>
+                        </el-form-item>
                         <!-- 按钮 -->
-                        <el-form-item class="btns">
-                            <el-button type="primary" @click="login()">提交</el-button>
-                            <el-button type="warning" @click="resetLoginForm()">重置</el-button>
+                        <el-form-item class="btns" style="margin-top: 47px;">
+                            <div>
+                                <el-button type="primary" @click="login()">提交</el-button>
+                                <el-button type="warning" @click="resetLoginForm()">重置</el-button>
+                            </div>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -31,7 +39,7 @@
             <!-- 注册提示 -->
             <transition name="el-zoom-in-top">
                 <div class="regist_box" v-show="show2" style="background-color: rgba(247 214 214 / 90%);">
-                    <div style=" margin-top: 75%;">
+                    <div style=" margin-top: 80%;">
                         <span style="font-size: 25px;">没有账号？</span><br>
                         <span style="color: #4bacda;line-height: 40px; cursor: pointer; font-size: 18px;"
                             @click="show2 = !show2, show = !show">&emsp;
@@ -92,6 +100,7 @@
 
 <script>
 import { startSakura, stopp, staticx } from "@/assets/js/sakura"
+import Cookies from 'js-cookie'
 
 export default {
     data() {
@@ -108,20 +117,21 @@ export default {
             //表单数据对象
             loginForm: {
                 username: "",
-                password: ""
+                password: "",
             },
             registForm: {
                 username: "",
                 password: "",
                 checkPassword: "",
-                email: ""
+                email: "",
             },
+            rememberMe: false,  //是否记住用户
             //验证对象
             loginRules: {
                 //校验用户名
                 username: [
                     { required: true, message: '用户名为必填项', trigger: 'blur' },  //必填项验证
-                    { min: 2, max: 8, message: '长度在 2 到 8 个字符', trigger: 'blur' }  //长度验证
+                    { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }  //长度验证
                 ],
                 //校验密码
                 password: [
@@ -130,7 +140,7 @@ export default {
                 ],
                 //校验确认密码
                 checkPassword: [
-                    { validator: validatePass2, trigger: 'blur' }   
+                    { validator: validatePass2, trigger: 'blur' }
                 ],
                 email: [
                     { required: true, message: '邮箱为必填项', trigger: 'blur' },  //必填项验证
@@ -138,8 +148,15 @@ export default {
             },
             //展开动画
             show2: true,
-            show: false
+            show: false,
+            userCookie: {
+                username: "",
+                password: ""
+            },
         };
+    },
+    created() {
+        this.autoLogin();
     },
     methods: {
         //重置表单内容
@@ -149,6 +166,22 @@ export default {
         resetRegistForm() {
             this.$refs.registFormRef.resetFields();
         },
+        //cookie存在自动登录
+        async autoLogin() {
+            const rememberMe = Cookies.get('rememberMe');
+            if (rememberMe) {
+                const user = JSON.parse(Cookies.get('user'));
+                this.userCookie.username = user.username;
+                this.userCookie.password = user.password;
+                const { data: res } = await this.$http.post("login", this.userCookie)    //访问后台
+                if (res.flag == "ok") {
+                    this.$message.success("登录成功！")
+                    this.$router.push({ path: "/index" });      //页面路由跳转
+                } else {
+                    this.$message.error("登录失败！")
+                }
+            }
+        },
         //登录
         login() {
             //验证校验规则
@@ -156,14 +189,22 @@ export default {
                 if (!valid) return;   //校验失败，验证用户名和密码合法性
                 const { data: res } = await this.$http.post("login", this.loginForm)    //访问后台
                 if (res.flag == "ok") {
+                    // 设置cookie，有效期为7天
+                    Cookies.set("user", JSON.stringify(res.user), { expires: 7 });
+                    Cookies.set("userId", res.userId, { expires: 7 });
+                    Cookies.set("headimage", res.headimage, { expires: 7 });
+                    //保存登录状态
+                    if (this.rememberMe) {
+                        Cookies.set('rememberMe', true, { expires: 7 });
+                    }
+                    window.sessionStorage.setItem('success', true);
                     this.$message.success("登录成功！")
                     this.$router.push({ path: "/index" });      //页面路由跳转
-                    //console.log(res.user)
-                    window.sessionStorage.setItem("user", JSON.stringify(res.user));   //存储user对象
-                    window.sessionStorage.setItem("userId", res.userId);
-                    window.sessionStorage.setItem("headimage", res.headimage);
+                    //存储用户角色
+                    const { data: res2 } = await this.$http.get(`getRole?userId=${Cookies.get("userId")}`)    //访问后台
+                    Cookies.set("role", res2, { expires: 7 })
                     //后台信息页
-                    window.sessionStorage.setItem('activePath', "/message");
+                    Cookies.set('activePath', "/message", { expires: 7 });
                 } else {
                     this.$message.error("登录失败！")
                 }
@@ -174,14 +215,20 @@ export default {
             //验证校验规则
             this.$refs.registFormRef.validate(async valid => {
                 if (!valid) return;   //校验失败，验证用户名和密码合法性
-                const { data: res } = await this.$http.post("adduser", this.registForm);
-                if (res != "success") {
-                    return this.$message.error("注册失败！");
+                //检测用户名唯一性
+                const { data: res } = await this.$http.get(`uniqueUser?username=${this.registForm.username}`);
+                if (res != true) {
+                    return this.$message.error("用户名已存在！");
+                } else {
+                    const { data: res } = await this.$http.post("adduser", this.registForm);
+                    if (res != "success") {
+                        return this.$message.error("注册失败！");
+                    }
+                    this.$message.success("注册成功！");
+                    this.$refs.registFormRef.resetFields();  //清空表单
+                    this.show = !this.show;   //返回登录
+                    this.show2 = !this.show2
                 }
-                this.$message.success("注册成功！");
-                this.$refs.registFormRef.resetFields();  //清空表单
-                this.show = !this.show;   //返回登录
-                this.show2 = !this.show2
             })
         },
         sakuraChange() {  //落樱效果切换
@@ -214,7 +261,7 @@ export default {
 
 .login_box {
     width: 430px;
-    height: 350px;
+    height: 370px;
     position: relative;
 }
 
@@ -226,7 +273,7 @@ export default {
 
 .regist_box {
     width: 200px;
-    height: 350px;
+    height: 370px;
     position: relative;
 
     div {
@@ -271,4 +318,11 @@ export default {
 
 .regist_form {
     bottom: 4%;
-}</style>
+}
+
+/deep/ .el-form-item__content {
+    font-size: 17px;
+    display: flex;
+    color: #e6a23c;
+}
+</style>

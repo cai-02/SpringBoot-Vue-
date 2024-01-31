@@ -15,5 +15,6 @@ public class Article {
     private Date time;
     private int categoryId;
     private String categoryName;
+    private int userId;
 
 }

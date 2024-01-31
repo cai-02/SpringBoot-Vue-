@@ -3,7 +3,8 @@
         <!-- 头像昵称 -->
         <el-card class="preson-message el-card-two">
             <span>
-                <img class="cus" :src="this.headImg" width="100px" height="100px" style="border-radius: 50%;" />
+                <img @click="toManage" class="headIm cus" :src="this.headImg" width="100px" height="100px"
+                    style="border-radius: 50%;" />
             </span>
             <div style="margin-top: 5px;">
                 <span style="font-size: 24px;">{{ userName }}</span>
@@ -27,8 +28,8 @@
                 </svg>
                 <span style="font-size: 20px;">公告</span>
             </div>
-            <div class="aside-items-sty">
-                <span>网站维护中，暂不可用！</span>
+            <div class="aside-items-sty" style="white-space: normal;">
+                <span>欢迎大家使用本平台，有任何问题请联系：363839026@qq.com</span>
             </div>
         </el-card>
         <!-- 最近更改 -->
@@ -59,13 +60,13 @@
             <!-- class="el-icon-orange" -->
             <div>
                 <span class="xinjian"
-                    style="display: block; margin-top: 4px; font-size: 20px; text-align: left; color: #1ee6a3; position: absolute;">
+                    style="display: block; margin-top: 3px; font-size: 20px; text-align: left; color: #1ee6a3; position: absolute;">
                     类别</span>
                 <span class="el-icon-circle-plus-outline" style="display: block; color: #1ee6a3; font-size: 30px;"></span>
             </div>
         </div>
         <!-- 类别显示区 -->
-        <div v-for="(item, index) in category" :key="index" @click="toCategory(item.categoryId)">
+        <div v-for="(item, index) in category.slice(0, visibleCardCount)" :key="index" @click="toCategory(item.categoryId)">
             <el-card class="preson-message el-card-three"
                 :style="{ 'background-color': getRandomColor(), height: '160px', cursor: 'pointer' }">
                 <div class="aside-type">
@@ -75,9 +76,9 @@
         </div>
         <!-- 新增类别区域 -->
         <div>
-            <el-dialog title="添加用户" :visible.sync="addDialogVisible" @close="addDialogClosed()">
+            <el-dialog title="添加分类" :visible.sync="addDialogVisible" @close="addDialogClosed()">
                 <el-form :model="cate" label-width="65px" :rules="addFormRules" ref="cate">
-                    <el-form-item label="名称" prop="categoryName">
+                    <el-form-item label="类名" prop="categoryName">
                         <el-input placeholder="请输入分类名" v-model="cate.categoryName"></el-input>
                     </el-form-item>
                 </el-form>
@@ -87,6 +88,15 @@
                 </span>
             </el-dialog>
         </div>
+        <!-- 更多分类 -->
+        <div v-if="showCateBut" class="el-card-two noteA" @click="showAllCate()" style="padding: 22px; height: 55px; width: 100; margin-top: 20px; background: white; display: flex; margin-bottom: 18px;
+                            flex-direction: column; justify-content: center; padding: 16px;">
+            <div>
+                <span v-text="moreText" class="xinjian" ref="moreCate"
+                    style="display: block; margin-top: 3px; font-size: 20px; text-align: center; color: #1ee6a3;">
+                </span>
+            </div>
+        </div>
         <!-- 相册 -->
         <el-card class="preson-message el-card-four" style="background-color: #ffefcd;">
             <div style="text-align: left;">
@@ -95,7 +105,7 @@
                 </svg>
                 <span style="font-size: 20px;">图集</span>
             </div>
-            <div class="aside-items-sty">
+            <div class="aside-items-sty" style="white-space: normal;">
                 <span>急急急！功能正在紧急更新中</span>
             </div>
         </el-card>
@@ -134,6 +144,7 @@
 </template>
   
 <script>
+import Cookies from 'js-cookie'
 
 export default ({
     data() {
@@ -157,35 +168,45 @@ export default ({
                     { required: true, message: '请输入分类名', trigger: 'blur' },
                     { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }
                 ],
-            }
+            },
+            visibleCardCount: 5,    //默认显示五条类别
+            moreText: "更多",
+            showCateBut: false,
         };
     },
     created() {
+        this.userId = JSON.parse(Cookies.get("userId"));
         this.getArticleList();
         this.getArticleByTime();
-        if (JSON.parse(sessionStorage.getItem("user")) != null && sessionStorage.getItem("headimage") != null) {
-            this.userName = JSON.parse(sessionStorage.getItem("user")).username;
-            this.headImg = sessionStorage.getItem("headimage");
+        if (JSON.parse(Cookies.get("user")) != null && Cookies.get("headimage") != null) {
+            this.userName = JSON.parse(Cookies.get("user")).username;
+            this.headImg = Cookies.get("headimage");
         } else {
             return;
         }
-        this.userId = JSON.parse(sessionStorage.getItem("userId"));
         this.cate.userId = this.userId;
         //加载类别
         this.loadCategory();
     },
     methods: {
         async getArticleList() {
-            this.author = JSON.parse(sessionStorage.getItem("user")).username;
-            const { data: res } = await this.$http.get(`getArticle?author=${this.author}&title=''&pageStart=1&pageSize=7`);
+            const { data: res } = await this.$http.get(`getArticle?userId=${this.userId}&title=''&pageStart=1&pageSize=7`);
             this.articleList = res.data;
             //console.log(JSON.stringify(res.data))
             this.articleCounts = res.number;  //文章总数
         },
+        //点击头像进入后台
+        toManage() {
+            this.activePath = Cookies.get('activePath');  //取出cookie里的path，动态修改path
+            if (this.activePath != null) {
+                this.$router.push({ path: this.activePath });
+            } else {
+                this.$router.push({ path: "/admin" });
+            }
+        },
         //获取最近更改的笔记
         async getArticleByTime() {
-            this.author = JSON.parse(sessionStorage.getItem("user")).username;
-            const { data: res } = await this.$http.get(`getArticleByTime?author=${this.author}`);
+            const { data: res } = await this.$http.get(`getArticleByTime?userId=${this.userId}`);
             this.articleListByTime = res.data;
             //console.log(this.articleListByTime)
         },
@@ -195,9 +216,19 @@ export default ({
         },
         //加载分类
         async loadCategory() {
-            const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
+            const { data: res } = await this.$http.get(`getCategory2?userId=${this.userId}`);
             this.category = res.data;
             //console.log(this.category)
+            if (this.category.length > 5) {
+                this.showCateBut = true;
+            } else {
+                this.showCateBut = false;
+            }
+        },
+        //显示全部分类
+        showAllCate() {
+            this.visibleCardCount = (this.visibleCardCount === 5) ? this.category.length : 5;
+            this.moreText = (this.moreText === "更多") ? "收起" : "更多";
         },
         //随机色
         getRandomColor() {
@@ -269,4 +300,24 @@ export default ({
 /deep/ .el-dialog__body {
     padding: 20px 20px 0 20px;
 }
-</style>
+
+/deep/ .el-dialog__header {
+    text-align: left;
+}
+
+.headIm {
+    transition: transform 0.3s ease;
+    /* 添加过渡效果 */
+    /* 设置旋转中心为头像的中心 */
+    transform-origin: center center;
+}
+
+.headIm:hover {
+    transform: rotate(360deg);
+    /* 鼠标悬停时顺时针旋转360度 */
+}
+
+.headIm:active {
+    transform: rotate(-360deg);
+    /* 在鼠标点击时逆时针旋转360度 */
+}</style>

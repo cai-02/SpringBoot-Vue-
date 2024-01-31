@@ -14,6 +14,6 @@
         </collection>
     </resultMap>
     <select id="getMenus" resultMap="menuMap">
-        select mm.*, sm.id as sid, sm.title as stitle, sm.path as spath from mainmenu mm, submenu sm where mm.id = sm.mid ORDER BY mm.id;
+        select mm.*, sm.id as sid, sm.title as stitle, sm.path as spath from mainmenu mm, submenu sm where mm.id = sm.mid and sm.role like CONCAT('%', (SELECT role FROM user WHERE user_id = #{userId}), '%') ORDER BY mm.id;
     </select>
 </mapper>

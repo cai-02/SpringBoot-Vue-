@@ -7,6 +7,7 @@ import com.cai.violetcai.bean.User;
 import com.cai.violetcai.dao.ArticleDao;
 import com.cai.violetcai.dao.CategoryDao;
 import com.cai.violetcai.dao.UserDao;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,23 +41,24 @@ public class ArticleController {
 
     //获取全部个人笔记数据
     @RequestMapping("/getArticle")
-    public String getArticleList(String author, String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize){
+    public String getArticleList(int userId, String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize){
         //获取最大列表数和当前页编号
-        int numbers = articleDao.getArticleCounts(author);
+        int numbers = articleDao.getArticleCounts(userId);
         int pageStart = (pageNum - 1) * pageSize;
 
-        List<Article> articles = articleDao.getAllArticleByAuthor(author, "%" + title + "%", pageStart, pageSize);
+        List<Article> articles = articleDao.getAllArticleByUserId(userId, "%" + title + "%", pageStart, pageSize);
         HashMap<String, Object> res = new HashMap<>();
         res.put("number", numbers);
         res.put("data", articles);
+        //System.out.println(userId + " " + title + " " + pageStart + " " + pageSize + "  //" + articles);
         String res_String = JSON.toJSONString(res);
         return res_String;
     }
 
     @RequestMapping("/getArticleByHeat")
-    public String getArticleList2(String author){
+    public String getArticleList2(int userId){
         //获取最大列表数和当前页编号
-        int numbers = articleDao.getArticleCounts(author);
+        int numbers = articleDao.getArticleCounts(userId);
         //List<Article> articles = articleDao.getArticleByHeat();
         HashMap<String, Object> res = new HashMap<>();
         res.put("number", numbers);
@@ -69,8 +71,7 @@ public class ArticleController {
     //保持笔记
     @RequestMapping("/addArticle")
     public String addArticle(@RequestBody Article notes){
-        int userId = userDao.getUserIdByName(notes.getAuthor());
-        int categoryId = categoryDao.getCategoryId(userId, notes.getCategoryName());
+        int categoryId = categoryDao.getCategoryId(notes.getUserId(), notes.getCategoryName());
         notes.setCategoryId(categoryId);
         int i = articleDao.addArticle(notes);
         return i > 0 ? "success":"error";
@@ -86,8 +87,8 @@ public class ArticleController {
 
     //查询最近更改的文章
     @RequestMapping("/getArticleByTime")
-    public String getArticleByTime(@RequestParam("author") String author){
-        List<Article> articles = articleDao.getArticleByTime(author);
+    public String getArticleByTime(@RequestParam("userId") int userId){
+        List<Article> articles = articleDao.getArticleByTime(userId);
         HashMap<String, Object> res = new HashMap<>();
         res.put("data", articles);
         String res_String = JSON.toJSONString(res);
@@ -97,29 +98,35 @@ public class ArticleController {
     //笔记更新
     @RequestMapping("/updateArticle")
     public String updateArticle(@RequestBody Article notes){
-        int userId = userDao.getUserIdByName(notes.getAuthor());
-        int categoryId = categoryDao.getCategoryId(userId, notes.getCategoryName());
+        int categoryId = categoryDao.getCategoryId(notes.getUserId(), notes.getCategoryName());
         notes.setCategoryId(categoryId);
         int i = articleDao.updateArticle(notes);
         return i > 0 ? "success":"error";
     }
 
-    //获取全部个人笔记数据（根据用户名及类别）
+    //获取全部个人笔记数据（根据用户及类别）
     @RequestMapping("/getArticleByCate")
-    public String getArticleList(String author, int categoryId, String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize){
+    public String getArticleList(int userId, int categoryId, String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize){
         //获取最大列表数和当前页编号
-        int numbers = articleDao.getArticleCountsByCate(author, categoryId);
+        int numbers = articleDao.getArticleCountsByCate(userId, categoryId);
         int pageStart = (pageNum - 1) * pageSize;
         //获取类别名
         String categoryName = categoryDao.getCategoryNameById(categoryId);
 
-        List<Article> articles = articleDao.getAllArticleByAuthorCate(author, categoryId, "%" + title + "%", pageStart, pageSize);
+        List<Article> articles = articleDao.getAllArticleByUserIdCate(userId, categoryId, "%" + title + "%", pageStart, pageSize);
         HashMap<String, Object> res = new HashMap<>();
         res.put("number", numbers);
         res.put("data", articles);
         res.put("categoryName", categoryName);
         String res_String = JSON.toJSONString(res);
         return res_String;
+    }
+
+    //删除笔记
+    @RequestMapping("/deleteArticle")
+    public String deleteArticle(@Param("noteId") int noteId) {
+        int s = articleDao.deleteArticle(noteId);
+        return s > 0 ? "success":"error";
     }
 
 }

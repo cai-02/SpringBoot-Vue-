@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Cookies from 'js-cookie'
 //引入login组件
 import Test from '../components/test.vue'
 import Login from '../components/Login.vue'
@@ -74,16 +75,32 @@ const router = new VueRouter({
   // },
   routes
 })
-//挂载路由导航守卫
-/*router.beforeEach((to, from, next)=>{
-  //to 将要访问
-  //from 从哪儿访问
-  //next 接着干的事
-  if(to.path=='/login') return next();
-  //获取user
-  const userFlag = window.sessionStorage.getItem("user");  //取出当前用户
-  if(!userFlag) return next("/login");  //无值返回登录页
-  next();   //符合要求，放行
-})*/
+
+// 导航守卫
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = Cookies.get('rememberMe');
+  const isAuthenticated2 = sessionStorage.getItem('success');
+  if (isAuthenticated === undefined) {
+    if (isAuthenticated2 !== "true") {  //无cookie未登录
+      if (to.path !== '/login') {
+        next('/login');  // 未登录时重定向到 '/login'
+      } else {
+        next();  // 已经在 /login 路由，正常访问
+      }
+    } else {                           //无cookie已登录
+      next();
+      if (to.path === '/user' && Cookies.get("role") !== "管理员") {
+        alert("权限不足！");
+        next('/index');
+      }
+    }
+  } else {           //有cookie
+    next();
+    if (to.path === '/user' && Cookies.get("role") !== "管理员") {
+      alert("权限不足！");
+      next('/index');
+    }
+  }
+});
 
 export default router

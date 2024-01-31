@@ -182,9 +182,6 @@ body::-webkit-scrollbar-track {
     margin-bottom: 5px;
     cursor: pointer;
 }
-.wz-counts:hover {
-    color: #2E95FB;
-}
 /* 主页左侧小图标样式 */
 .icon-st{
     width: 1.4em;

@@ -1,5 +1,7 @@
 package com.cai.violetcai;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.cai.violetcai.bean.Article;
 import com.cai.violetcai.bean.Category;
@@ -10,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,15 +31,27 @@ class VioletCaiApplicationTests {
 
     @Test
     void contextLoads() {
-        int numbers = articleDao.getArticleCountsByCate("violet", 7);
-        int pageStart = (1 - 1) * 10;
+        deleteFile("e5c9861dc3bc4a9f9b288b060bbc7a62");
+    }
 
-        List<Article> articles = articleDao.getAllArticleByAuthorCate("violet", 7, "%%", pageStart, 10);
-        HashMap<String, Object> res = new HashMap<>();
-        res.put("number", numbers);
-        res.put("data", articles);
-        String res_String = JSON.toJSONString(res);
-        System.out.println(res_String);
+
+    public String deleteFile(String flag) {
+        String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
+        List<String> fileNames = FileUtil.listFileNames(basePath);   // 获取所有文件名称
+        String fileName = fileNames.stream().filter(name -> name.contains(flag)).findAny().orElse("");
+
+        if (StrUtil.isNotEmpty(fileName)) {
+            try {
+                Path filePath = Paths.get(basePath, fileName);
+                Files.delete(filePath);
+                return "文件删除成功";
+            } catch (IOException e) {
+                // 记录日志或返回适当的错误消息
+                return "文件删除失败";
+            }
+        } else {
+            return "未找到匹配的文件";
+        }
     }
 
 }

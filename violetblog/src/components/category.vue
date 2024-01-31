@@ -104,6 +104,7 @@ import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Vue from 'vue'
 import Header from '../components/header.vue'
 import LeftAside from '../components/left.vue'
+import Cookies from 'js-cookie'
 
 export default Vue.extend({
     components: {
@@ -114,6 +115,7 @@ export default Vue.extend({
         return {
             artId: 0,
             username: "",
+            userId: 0,
             categoryId: 0,
             artTitle: "",       //查询信息
             artPageStart: 1,     //起始页
@@ -130,7 +132,8 @@ export default Vue.extend({
         const herf = window.location.href.split("/");
         this.categoryId = herf[herf.length - 1];
         //用户名
-        this.username = JSON.parse(sessionStorage.getItem("user")).username;   //获取用户名
+        this.username = JSON.parse(Cookies.get("user")).username;   //获取用户名
+        this.userId = Cookies.get('userId');
 
         this.getNotes();
     },
@@ -143,7 +146,7 @@ export default Vue.extend({
         },
         //获取笔记
         async getNotes() {
-            const { data: res } = await this.$http.get(`getArticleByCate?author=${this.username}&categoryId=${this.categoryId}&title=${this.artTitle}&pageStart=${this.artPageStart}&pageSize=${this.artPageSize}`);
+            const { data: res } = await this.$http.get(`getArticleByCate?userId=${this.userId}&categoryId=${this.categoryId}&title=${this.artTitle}&pageStart=${this.artPageStart}&pageSize=${this.artPageSize}`);
             if (res.data != "") {
                 this.notesList = res.data;
             } else {
@@ -188,7 +191,7 @@ export default Vue.extend({
             const herf = window.location.href.split("/");
             this.categoryId = herf[herf.length - 1];
             //用户名
-            this.username = JSON.parse(sessionStorage.getItem("user")).username;   //获取用户名
+            this.username = JSON.parse(Cookies.get("user")).username;   //获取用户名
             this.getNotes();
         }
     },

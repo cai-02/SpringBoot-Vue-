@@ -27,23 +27,28 @@
                 <el-table-column label="用户名" prop="username"></el-table-column>
                 <el-table-column label="邮箱" prop="email"></el-table-column>
                 <el-table-column label="角色" prop="role"></el-table-column>
-                <el-table-column label="性别" width="100px" prop="gender"></el-table-column>
-                <el-table-column label="简介">
+                <!-- <el-table-column label="性别" width="100px" prop="gender"></el-table-column>
+                <el-table-column label="简介"> -->
                     <!-- 添加样式类名以限制行高和文本截断 -->
-                    <template slot-scope="scope">
+                    <!-- <template slot-scope="scope">
                         <div class="table-cell">
                             {{ scope.row.introduction }}
                         </div>
                     </template>
-                </el-table-column>
-                <el-table-column label="状态" prop="state">
+                </el-table-column> -->
+                <el-table-column label="状态" width="120px" prop="state">
                     <!-- 作用域插槽 -->
                     <template slot-scope="scope">
                         <!-- {{scope.row}} 每一行封存的数据 -->
                         <el-switch v-model="scope.row.state" @change="userStateChanged(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column label="头像" width="100px">
+                    <template slot-scope="scope">
+                        <img style="cursor: pointer;" class="zoom-effect" :src="scope.row.headimage" width="100%" height="100%">
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="200px">
                     <template slot-scope="scope">
                         <!-- 修改 -->
                         <el-tooltip type="dark" content="修改信息" placement="top-start" :enterable="false">

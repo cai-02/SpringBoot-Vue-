@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.violetcai.dao.CategoryDao">
+
+    <select id="getCategoryId" resultType="int">
+        SELECT category_id FROM category where user_id = #{userId} and category_name = #{cateName};
+    </select>
+
+    <select id="getAllCategoryByUserId" resultType="com.cai.violetcai.bean.Category">
+        SELECT * FROM category where user_id = #{userId}
+    </select>
+    <select id="getAllCategoryByUserId2" resultType="com.cai.violetcai.bean.Category">
+        SELECT * FROM category where user_id = #{userId} order by category_id desc
+    </select>
+
+    <select id="getCategoryCount" resultType="int">
+        select count(*) from category where user_id = #{userId}
+    </select>
+
+    <select id="getCategoryNameById" resultType="String">
+        SELECT category_name FROM category where category_id = #{categoryId}
+    </select>
+
+    <insert id="addCategory">
+        insert into category(category_name, user_id) values (#{categoryName}, #{userId})
+    </insert>
+
+    <!--    多选删除-->
+    <delete id="deleteMultipleCate" parameterType="java.util.List">
+        DELETE FROM category
+        WHERE category_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

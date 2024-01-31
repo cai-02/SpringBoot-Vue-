@@ -45,6 +45,7 @@
 
 <script>
 import { startSakura, stopp, staticx } from "@/assets/js/sakura"
+import Cookies from 'js-cookie'
 
 export default {
     data() {
@@ -53,24 +54,22 @@ export default {
             menuList:[],
             isCollapse: false,
             iconsObject: {
-                '100':'iconfont icon-guanliyuan',
-                '200':'iconfont icon-yiliaohangyedeICON-',
-                '101':'iconfont icon-denglu-copy',
-                '102':'iconfont icon-mima',
-                '103':'iconfont icon-yiliaohangyedeICON-',
-                '104':'iconfont icon-shangpin',
-                '201':'iconfont icon-shu',
-                '202':'iconfont icon-qialuli',
-                '203':'iconfont icon-tableware',
+                '100':'el-icon-s-custom',
+                '200':'el-icon-s-data',
+                '201':'el-icon-user-solid',
+                '101':'el-icon-s-unfold',
+                '102':'el-icon-s-comment',
             },
             activePath: '/message',   //默认路径
+            userId: 0,
         }
     },
     // onload事件
     created() {
+        this.userId = Cookies.get("userId");
         //查询menuList
         this.getMenuList();
-        this.activePath = window.sessionStorage.getItem('activePath');  //取出session里的path，动态修改path
+        this.activePath = Cookies.get('activePath');  //取出cookie里的path，动态修改path
     },
     methods: {
         logout() {
@@ -79,7 +78,7 @@ export default {
         },
         //获取导航菜单方法
         async getMenuList() {
-            const{data:res} = await this.$http.get("/menus");
+            const{data:res} = await this.$http.get(`/menus?userId=${this.userId}`);
             if(res.flag != 200){
                 return this.$message.error("获取列表失败！");
             }
@@ -92,7 +91,7 @@ export default {
         },
         //保存路径
         saveNavState(activePath) {
-            window.sessionStorage.setItem('activePath', activePath);
+            Cookies.set('activePath', activePath, { expires: 7 });
             this.activePath = activePath;
         },
         sakuraChange() {  //落樱效果切换
@@ -108,7 +107,7 @@ export default {
         '$route'(){
             const herf = window.location.href.split("/");
             this.activePath = "/" + herf[herf.length - 1];
-            window.sessionStorage.setItem('activePath', activePath);
+            //Cookies.set('activePath', activePath, { expires: 7 });
             this.getMenuList();
         }
     }

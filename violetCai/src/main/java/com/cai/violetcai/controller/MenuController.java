@@ -5,6 +5,7 @@ import com.cai.violetcai.bean.MainMenu;
 import com.cai.violetcai.dao.MenuDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -17,9 +18,9 @@ public class MenuController {
     MenuDao menuDao;
 
     @RequestMapping("/menus")
-    public String getAllMenus(){
+    public String getAllMenus(@RequestParam("userId") int userId){
         HashMap<String, Object> data = new HashMap<>();
-        List<MainMenu> menus = menuDao.getMenus();
+        List<MainMenu> menus = menuDao.getMenus(userId);
         if(menus != null){
             data.put("menus", menus);
             data.put("flag", 200);

@@ -27,7 +27,7 @@
                 </svg>
                 首页
             </el-menu-item>
-            <el-menu-item index="3">
+            <el-menu-item index="3" @click="category()">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-fenlei-"></use>
                 </svg>
@@ -63,6 +63,7 @@
   
 <script>
 import VueScrollTo from 'vue-scrollto';
+import Cookies from 'js-cookie'
 
 export default {
     data() {
@@ -82,8 +83,8 @@ export default {
         window.removeEventListener('scroll', this.handleScroll);
     },
     created() {
-        if (JSON.parse(sessionStorage.getItem("user")) != null && sessionStorage.getItem("headimage") != null) {
-            this.headImg = sessionStorage.getItem("headimage");
+        if (JSON.parse(Cookies.get("user")) != null && Cookies.get("headimage") != null) {
+            this.headImg = Cookies.get("headimage");
         } else {
             return;
         }
@@ -92,12 +93,14 @@ export default {
         const herf2 = herf[herf.length - 1];
         if (herf[herf.length - 1] == 'publish' || herf2.split("?")[0] == "notes") {
             this.activeIndex = '0';
+        }else if(herf[herf.length - 1] == 'catemanage'){
+            this.activeIndex = '3';
         }
     },
     methods: {
         // 进入后台
         intoSystem() {
-            this.activePath = window.sessionStorage.getItem('activePath');  //取出session里的path，动态修改path
+            this.activePath = Cookies.get('activePath');  //取出cookie里的path，动态修改path
             if (this.activePath != null) {
                 this.$router.push({ path: this.activePath });
             } else {
@@ -108,8 +111,16 @@ export default {
         },
         //退出登录
         exit() {
-            //window.sessionStorage.clear();   //清楚session
             this.$router.push("/login");
+            Cookies.remove('user');
+            Cookies.remove('rememberMe');
+            Cookies.remove('success');
+            Cookies.remove("user");   
+            Cookies.remove("userId");
+            Cookies.remove("headimage");
+            Cookies.remove("activePath");
+            Cookies.remove("role");
+            sessionStorage.clear("success");
         },
         //回到首页
         shouye() {
@@ -117,6 +128,14 @@ export default {
                 location.reload();
             } else {
                 this.$router.push({ path: '/index' })
+            }
+        },
+        //去到分类页
+        category() {
+            if (this.$route.path == "/catemanage") {
+                location.reload();
+            } else {
+                this.$router.push({ path: '/catemanage' })
             }
         },
         handleScroll() {

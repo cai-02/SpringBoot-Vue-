@@ -80,6 +80,7 @@ import Header from '../components/header.vue'
 import Vue from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import moment from 'moment'
+import Cookies from 'js-cookie'
 
 export default Vue.extend({
     components: {
@@ -111,7 +112,7 @@ export default Vue.extend({
     },
     created() {
         window.scrollTo(0, 0);
-        this.userId = JSON.parse(sessionStorage.getItem("userId"));   //获取用户id
+        this.userId = JSON.parse(Cookies.get("userId"));   //获取用户id
         this.loadCategory()  //加载类别
     },
     methods: {
@@ -122,11 +123,11 @@ export default Vue.extend({
         async save() {
             //当前时间获取
             var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-            this.notes.author = JSON.parse(sessionStorage.getItem("user")).username;
+            this.notes.author = JSON.parse(Cookies.get("user")).username;
             this.notes.time = nowTime;
             this.notes.content = this.html;
 
-            this.notes.userId = sessionStorage.getItem("userId"); //无用
+            this.notes.userId = this.userId;
 
             if (this.notes.title == "") {
                 this.$message.warning("标题不能为空！")
@@ -134,7 +135,8 @@ export default Vue.extend({
                 const { data: res } = await this.$http.post("/addArticle", this.notes)    //访问后台
                 if (res == "success") {
                     this.$message.success("保存成功！")
-                    this.$router.go(-1)
+                    //this.$router.go(-1)
+                    this.$router.push({ path: "/index" });
                 } else {
                     this.$message.error("保存失败！")
                 }

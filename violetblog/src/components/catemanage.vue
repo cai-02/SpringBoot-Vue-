@@ -16,70 +16,52 @@
                 <div class="page-container" style="justify-content: center; position: relative;">
                     <el-card
                         style="width: 80%; background-color: rgb(255, 255, 255, 0.5); border-radius: 25px; padding: 0;">
-                        <el-card class="cate el-card-two"
+                        <el-card v-for="(item, index) in category" :key="index" class="cate el-card-two"
                             :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
-                            style="max-width: 250px; border-radius: 30px;">
-                            <div
-                                style="padding: 0 15px; font-size: 25px; font-weight: bold; color: white; text-align: center; margin-top: 5px;">
-                                <span class="category-name">学习人生</span>
-                            </div>
-                        </el-card>
-                        <el-card class="cate el-card-two"
-                            :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
-                            style="max-width: 250px; border-radius: 30px;">
-                            <div
-                                style="padding: 0 15px; font-size: 25px; font-weight: bold; color: white; text-align: center; margin-top: 5px;">
-                                <span class="category-name">学习人生</span>
-                            </div>
-                        </el-card>
-                        <el-card class="cate el-card-two"
-                            :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
-                            style="max-width: 250px; border-radius: 30px;">
-                            <div
-                                style="padding: 0 15px; font-size: 25px; font-weight: bold; color: white; text-align: center; margin-top: 5px;">
-                                <span class="category-name">学习</span>
-                            </div>
-                        </el-card>
-                        <el-card class="cate el-card-two"
-                            :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
-                            style="max-width: 250px; border-radius: 30px;">
-                            <div
-                                style="padding: 0 15px; font-size: 25px; font-weight: bold; color: white; text-align: center; margin-top: 5px;">
-                                <span class="category-name">学习</span>
-                            </div>
-                        </el-card>
-                        <el-card class="cate el-card-two"
-                            :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
-                            style="max-width: 250px; border-radius: 30px;">
-                            <div
-                                style="padding: 0 15px; font-size: 25px; font-weight: bold; color: white; text-align: center; margin-top: 5px;">
-                                <span class="category-name">学习</span>
-                            </div>
-                        </el-card>
-                        <el-card class="cate el-card-two"
-                            :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
-                            style="max-width: 250px; border-radius: 30px;">
-                            <div
-                                style="padding: 0 15px; font-size: 25px; font-weight: bold; color: white; text-align: center; margin-top: 5px;">
-                                <span class="category-name">学习</span>
+                            style="max-width: 250px; border-radius: 50px; position: relative; border-top-left-radius: 0px;">
+                            <el-checkbox v-if="showCheckboxes && item.categoryName != '默认'" v-model="checkedItems"
+                                :label="item.categoryId" @change="handleCheckboxChange" class="card-checkbox"
+                                style="position: absolute; top: 5px; left: 5px;"></el-checkbox>
+                            <div @click="toCategory(item.categoryId)"
+                                style="padding: 19px 35px; font-size: 25px; font-weight: bold; height: 50px; color: white; text-align: center; margin-top: 5px; white-space: normal; word-break: break-all; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+                                <span class="category-name">{{ item.categoryName }}</span>
                             </div>
                         </el-card>
                     </el-card>
                     <el-popover placement="top" trigger="hover">
-                        <el-button type="danger" size="mini" plain @click="">删除</el-button><br />
-                        <el-button type="warning" size="mini" plain @click="" style="margin-top: 6px;">多选</el-button>
+                        <el-button type="warning" size="mini" plain @click="toggleCheckboxes">多选</el-button><br />
                         <div slot="reference" class="el-icon-more"
-                            style="position: absolute; color: red; right: 12.5%; top: 30px; font-size: 25px;">
+                            style="color: red; margin-left: -38px; margin-top: 5px; font-size: 25px;">
                         </div>
                     </el-popover>
                     <el-popover placement="top" trigger="hover" content="添加">
-                        <div slot="reference"
+                        <div slot="reference" @click="addDialogVisible = true"
                             style="background: #39c5bb; width: 65px; color: white;
-                        font-size: 19px; height: 65px; border-radius: 50%; right: 73px; position: absolute; cursor: pointer;">
+                        font-size: 19px; height: 65px; border-radius: 50%; position: absolute; right: 76px; cursor: pointer;">
                             <span class="el-icon-plus"
-                                style="display: block; color: #ffffff; font-size: 35px; margin-top: 14px; margin-left: 14.8px;"></span>
+                                style="display: block; color: #ffffff; font-size: 35px; left: 15.4px; top: 13.2px; position: absolute;"></span>
                         </div>
                     </el-popover>
+                    <div>
+                        <el-button v-if="showDelete" type="danger" size="mini" @click="deleteCate()"
+                            style="position: absolute; top: 100px; right: 80px;">删除</el-button>
+                        <el-button v-if="showDelete" type="success" size="mini" plain @click="closeCheck"
+                            style="position: absolute; top: 139px; right: 80px;">取消</el-button>
+                    </div>
+                    <!-- 新增类别区域 -->
+                    <div>
+                        <el-dialog title="添加分类" :visible.sync="addDialogVisible" @close="addDialogClosed()" width="35%">
+                            <el-form :model="cate" label-width="65px" :rules="addFormRules" ref="cate">
+                                <el-form-item label="类名" prop="categoryName">
+                                    <el-input placeholder="请输入分类名" v-model="cate.categoryName"></el-input>
+                                </el-form-item>
+                            </el-form>
+                            <span slot="footer" class="dialog-footer">
+                                <el-button @click="addDialogVisible = false">取消</el-button>
+                                <el-button type="primary" @click="addCate()">确定</el-button>
+                            </span>
+                        </el-dialog>
+                    </div>
                 </div>
             </div>
         </el-main>
@@ -95,6 +77,7 @@
 import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Header from '../components/header.vue'
 import Vue from 'vue'
+import Cookies from 'js-cookie'
 
 export default Vue.extend({
     components: {
@@ -104,10 +87,25 @@ export default Vue.extend({
         return {
             category: [],
             userId: 0,
+            addDialogVisible: false,     //对话框状态
+            addFormRules: {
+                categoryName: [
+                    { required: true, message: '请输入分类名', trigger: 'blur' },
+                    { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }
+                ],
+            },
+            cate: {
+                categoryName: "",
+                userId: 0,
+            },
+            showCheckboxes: false,   //多选框按钮显示
+            showDelete: false,   //删除按钮显示
+            checkedItems: [] // 用于存储选中复选框对应的项的ID
         };
     },
     created() {
-        this.userId = JSON.parse(sessionStorage.getItem("userId"));   //获取用户id
+        this.userId = JSON.parse(Cookies.get("userId"));   //获取用户id
+        this.cate.userId = this.userId;
         this.loadCategory()  //加载类别
     },
     methods: {
@@ -115,6 +113,73 @@ export default Vue.extend({
         async loadCategory() {
             const { data: res } = await this.$http.get(`getCategory?userId=${this.userId}`);
             this.category = res.data;
+            //console.log(this.category)
+        },
+        //去到分类
+        toCategory(id) {
+            const herf = window.location.href.split("/");
+            if (herf[herf.length - 1] == id) {
+                location.reload();   //路由重复，刷新当前页
+            } else {
+                this.$router.push({ path: '/category/' + id });
+            }
+        },
+        //监听添加用户操作，看是否关闭
+        addDialogClosed() {
+            this.$refs.cate.resetFields();
+        },
+        //添加类别
+        async addCate() {
+            this.$refs.cate.validate(async valid => {
+                if (!valid) return;
+                const { data: res } = await this.$http.post("/addCategory", this.cate)
+                if (res == "success") {
+                    this.$message.success("添加成功！");
+                    this.loadCategory();
+                    this.addDialogVisible = false;
+                } else {
+                    this.$message.error("添加失败！")
+                }
+            });
+        },
+        //多选框及删除按钮显示隐藏
+        toggleCheckboxes() {
+            this.showCheckboxes = !this.showCheckboxes;
+            this.showDelete = !this.showDelete;
+            if (this.showCheckboxes === true) {
+                this.checkedItems = [];
+            }
+        },
+        //删除分类
+        deleteCate() {
+            if (this.checkedItems.length === 0) {
+                this.$message.warning("未选中任何分类！")
+            } else {
+                this.$confirm('确定要删除该分类吗（笔记将会移入默认）？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    const { data: res } = await this.$http.delete(`deleteCate/${this.checkedItems.join(',')}`);
+                    if (res == "success") { 
+                        this.$message.success("删除成功！")
+                        this.loadCategory();
+                        this.showCheckboxes = !this.showCheckboxes;
+                        this.showDelete = !this.showDelete;
+                    } else {
+                        this.$message.error("删除失败！")
+                        this.showCheckboxes = !this.showCheckboxes;
+                        this.showDelete = !this.showDelete;
+                    }
+                }).catch(() => {
+                    // 用户点击了取消按钮，取消删除操作
+                });
+            }
+        },
+        //关闭多选
+        closeCheck() {
+            this.showCheckboxes = false;
+            this.showDelete = false;
         },
         //随机色
         getRandomColor() {
@@ -124,6 +189,9 @@ export default Vue.extend({
             const g = randomColorInRange();
             const b = randomColorInRange();
             return `rgb(${r}, ${g}, ${b})`;
+        },
+        handleCheckboxChange() {
+            //console.log(JSON.stringify(this.checkedItems))
         },
         sakuraChange() {  //落樱效果切换
             if (staticx) {
@@ -185,4 +253,12 @@ export default Vue.extend({
     margin: 15px 15px;
     width: auto;
 }
-</style>
+
+/deep/ .el-card__body,
+.el-main {
+    padding: 0;
+}
+
+/deep/ .el-checkbox__label {
+    display: none;
+}</style>

@@ -12,10 +12,14 @@ public interface CategoryDao {
     public int getCategoryId(int userId, String cateName);
     //获取用户全部类别
     public List<Category> getAllCategoryByUserId(@Param("userId") int id);
+    //获取用户全部类别（降序）
+    public List<Category> getAllCategoryByUserId2(@Param("userId") int id);
     //类别id查类别名
     public String getCategoryNameById(int categoryId);
     //获取类别总数
     public int getCategoryCount(@Param("userId") int id);
     //添加类别
     public int addCategory(Category category);
+    //删除分类
+    public int deleteMultipleCate(List<Integer> id);
 }

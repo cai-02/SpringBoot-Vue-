@@ -5,10 +5,7 @@ import com.cai.violetcai.bean.Article;
 import com.cai.violetcai.bean.Category;
 import com.cai.violetcai.dao.CategoryDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +35,29 @@ public class CategoryController {
         return res_cateMessage;
     }
 
+    //获取个人全部分类信息（降序）
+    @RequestMapping("getCategory2")
+    public String getAllCategoryByUserId2(@RequestParam("userId") int id){
+        int numbers = categoryDao.getCategoryCount(id);
+        List<Category> category = categoryDao.getAllCategoryByUserId2(id);
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("number", numbers);
+        res.put("data", category);
+        String res_cateMessage = JSON.toJSONString(res);
+        return res_cateMessage;
+    }
+
     //新增分类
     @RequestMapping("/addCategory")
     public String addCategory(@RequestBody Category category){
         int i = categoryDao.addCategory(category);
+        return i > 0 ? "success":"error";
+    }
+
+    //删除分类
+    @RequestMapping("/deleteCate/{id}")
+    public String deleteCate(@PathVariable List<Integer> id){
+        int i = categoryDao.deleteMultipleCate(id);
         return i > 0 ? "success":"error";
     }
 

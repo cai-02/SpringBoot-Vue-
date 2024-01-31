@@ -13,7 +13,7 @@
                     <span>{{ te }}|</span>
                 </div>
             </div>
-            <!-- 箭头 -->
+            <!-- 向下箭头 -->
             <div class="arrow-container"
                 style="top: 86vh; position: absolute; cursor: pointer; margin: auto; left: 0; right: 0; width: 45px;"
                 @click="scrollOneScreen">
@@ -66,7 +66,7 @@
             <div class="main-2" ref="targetDiv">
                 <div class="page-container">
                     <!-- 左侧侧边栏引用 -->
-                    <i-aside></i-aside>
+                    <i-aside :key="asideKey"></i-aside>
                     <!-- 文章内容部分 -->
                     <div class="recent-posts">
                         <div class="el-card-two noteA" @click="xin()" style="padding: 22px; height: 55px; width: auto; margin-top: 40px; background: white; display: flex; margin-bottom: 18px;
@@ -85,6 +85,7 @@
                                 style="border-bottom: 1px dashed rgb(168, 164, 164); padding-bottom: 8px; margin-bottom: 23px;">
                             </div>
                             <!-- 笔记存放区 -->
+                            <div v-if="noteVisi" style="margin-bottom: 30px; font-size: 25px; color: #ff7e94;">暂无笔记，快新建一篇吧！</div>
                             <div v-for="(item, index) in articleList" :key="index">
                                 <el-card class="article-cover el-card-two" body-style="padding: 0">
                                     <div class="parent-div-one" @click="toArticle(item.noteId)">
@@ -100,11 +101,10 @@
                                                 </el-popover>
                                                 <el-popover placement="top" trigger="hover">
                                                     <el-button type="danger" size="mini" plain
-                                                        @click="">删除</el-button><br />
-                                                    <el-button type="warning" size="mini" plain @click=""
-                                                        style="margin-top: 6px;">多选</el-button>
+                                                        @click="deleNote(item.noteId)">删除</el-button> 
                                                     <div slot="reference" class="el-icon-more"
-                                                        style="position: absolute; color: red; right: 15px; top: 15px;">
+                                                        style="position: absolute; color: red; right: 15px; top: 15px;"
+                                                        @click.stop="">
                                                     </div>
                                                 </el-popover>
                                                 <div class="content-introduce">
@@ -156,6 +156,7 @@
 import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Header from '../components/header.vue'
 import LeftAside from '../components/left.vue'
+import Cookies from 'js-cookie'
 
 export default {
     components: {
@@ -178,10 +179,14 @@ export default {
             but_color: "blue",
             isBackground: true,
             author: "",
+            asideKey: 1,   //侧边栏key初始值，用于重新加载
+            userId: 0,
+            noteVisi: false,
         };
     },
     created() {
         this.start();
+        this.userId = Cookies.get("userId");
         this.getArticleList();
     },
     methods: {
@@ -193,12 +198,17 @@ export default {
         },
         //获取所有文章
         async getArticleList() {
-            this.author = JSON.parse(sessionStorage.getItem("user")).username;
-            const { data: res } = await this.$http.get(`getArticle?author=${this.author}&title=${this.artTitle}&pageStart=${this.artPageStart}&pageSize=${this.artPageSize}`);
+            this.author = JSON.parse(Cookies.get("user")).username;
+            const { data: res } = await this.$http.get(`getArticle?userId=${this.userId}&title=${this.artTitle}&pageStart=${this.artPageStart}&pageSize=${this.artPageSize}`);
             this.articleList = res.data;
             //console.log(this.articleList)
             //console.log(res.number)
             this.articleCounts = res.number;
+            if(this.articleCounts === 0){
+                this.noteVisi = true;
+            }else{
+                this.noteVisi = false;
+            }
         },
         sakuraChange() {  //落樱效果切换
             if (staticx) {
@@ -240,6 +250,26 @@ export default {
         //去到文章
         toArticle(id) {
             this.$router.push({ path: '/notes?id=' + id });
+        },
+        //删除一篇笔记
+        deleNote(id) {
+            this.$confirm('确定要删除该笔记吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(async () => {
+                const { data: res } = await this.$http.delete(`deleteArticle?noteId=${id}`)    //访问后台
+                if (res == "success") {
+                    this.$message.success("删除成功！")
+                    this.getArticleList();
+                    // 修改 key 值，触发组件重新加载
+                    this.asideKey += 1;
+                } else {
+                    this.$message.error("删除失败！")
+                }
+            }).catch(() => {
+                // 用户点击了取消按钮，取消删除操作
+            });
         },
         //滚动条滚动
         scrollOneScreen() {

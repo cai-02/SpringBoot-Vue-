@@ -92,6 +92,7 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import Header from '../components/header.vue'
 import LeftAside from '../components/left.vue'
 import moment from 'moment'
+import Cookies from 'js-cookie'
 
 export default Vue.extend({
     components: {
@@ -122,6 +123,7 @@ export default Vue.extend({
                 time: "",
                 categoryId: 0,
                 categoryName: "",
+                userId: 0,
             },
             category: [],
         };
@@ -131,7 +133,8 @@ export default Vue.extend({
         this.getArticle(herf[herf.length - 1]);
         window.scrollTo(0, 0);
         this.article.noteId = herf[herf.length - 1];
-        this.userId = JSON.parse(sessionStorage.getItem("userId"));   //获取用户id
+        this.userId = JSON.parse(Cookies.get("userId"));   //获取用户id
+        this.article.userId = this.userId;
         this.loadCategory()  //加载类别
     },
     methods: {
@@ -178,7 +181,7 @@ export default Vue.extend({
                 this.contentShow2 = !this.contentShow2;
                 //当前时间获取
                 var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-                this.article.author = JSON.parse(sessionStorage.getItem("user")).username;
+                this.article.author = JSON.parse(Cookies.get("user")).username;
                 this.article.time = nowTime;
                 this.article.content = this.html;
 

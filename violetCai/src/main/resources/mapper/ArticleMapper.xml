@@ -11,18 +11,18 @@
         order by a.note_id desc limit #{pageStart}, #{pageSize}
     </select>
 
-    <select id="getAllArticleByAuthor" resultType="com.cai.violetcai.bean.Article">
+    <select id="getAllArticleByUserId" resultType="com.cai.violetcai.bean.Article">
         select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id
-        where a.author = #{author}
+        where a.user_id = #{userId}
         <if test="title != null">
             and a.title like #{title}
         </if>
         order by a.note_id desc limit #{pageStart}, #{pageSize}
     </select>
 
-    <select id="getAllArticleByAuthorCate" resultType="com.cai.violetcai.bean.Article">
+    <select id="getAllArticleByUserIdCate" resultType="com.cai.violetcai.bean.Article">
         select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id
-        where a.author = #{author} and a.category_id = #{categoryId}
+        where a.user_id = #{userId} and a.category_id = #{categoryId}
         <if test="title != null">
             and a.title like #{title}
         </if>
@@ -30,18 +30,15 @@
     </select>
 
     <select id="getArticleByTime" resultType="com.cai.violetcai.bean.Article">
-        SELECT * FROM notes where author=#{author} ORDER BY time DESC LIMIT 5
+        SELECT * FROM notes where user_id=#{userId} ORDER BY time DESC LIMIT 5
     </select>
 
     <select id="getArticleCounts" resultType="int">
-        select count(*) from notes
-        <if test="author != null">
-            where author = #{author}
-        </if>
+        select count(*) from notes where user_id = #{userId}
     </select>
 
     <select id="getArticleCountsByCate" resultType="int">
-        select count(*) from notes where author = #{author} and category_id = #{categoryId}
+        select count(*) from notes where user_id = #{userId} and category_id = #{categoryId}
     </select>
 
     <select id="getArticleCounts2" resultType="int">
@@ -52,7 +49,7 @@
     </select>
 
     <insert id="addArticle">
-        insert into notes(title, author, content, time, category_id, category_name) values (#{title}, #{author}, #{content}, #{time}, #{categoryId}, #{categoryName})
+        insert into notes(title, author, content, time, category_id, category_name, user_id) values (#{title}, #{author}, #{content}, #{time}, #{categoryId}, #{categoryName}, #{userId})
     </insert>
 
     <select id="getArticleMessage" resultType="com.cai.violetcai.bean.Article">
@@ -62,5 +59,13 @@
     <update id="updateArticle">
         update notes set title=#{title}, content=#{content}, time=#{time}, category_id=#{categoryId}, category_name=#{categoryName} where note_id=#{noteId}
     </update>
+
+    <update id="updateArticleAuthorById">
+        update notes set author=#{username} where user_id=#{userId}
+    </update>
+
+    <delete id="deleteArticle" parameterType="int">
+        DELETE from notes where note_id=#{id}
+    </delete>
 
 </mapper>
