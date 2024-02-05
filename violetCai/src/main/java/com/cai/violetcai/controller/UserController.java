@@ -10,10 +10,7 @@ import com.cai.violetcai.dao.ArticleDao;
 import com.cai.violetcai.dao.CategoryDao;
 import com.cai.violetcai.dao.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,7 +57,8 @@ public class UserController {
     public String addUser(@RequestBody User user){
         user.setRole("普通用户");
         user.setState(true);
-        user.setHeadimage("http://localhost:9000/files/head/57df623cd02240759fdf6ec280d833b4");
+        user.setHeadimage("http://localhost:9000/files/head/aabfd7dc07704ed4adef568c0797adc2");
+        //user.setHeadimage("http://47.108.66.150:9000/files/head/aabfd7dc07704ed4adef568c0797adc2");
         int i = userDao.addUser(user);
         if(i > 0) {
             //创建用户时创建默认分类
@@ -98,12 +96,13 @@ public class UserController {
 
     @RequestMapping("/gethead")
     public String changeImage(@RequestParam("img") String img, @RequestParam("id") int id, String headFlag){
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
+        String basePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/";
+        //String basePath = System.getProperty("user.dir") + "/headImage/";
         List<String> fileNames = FileUtil.listFileNames(basePath);   // 获取所有文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(headFlag)).findAny().orElse("");
         if (StrUtil.isNotEmpty(fileName)) {
             try {
-                if (headFlag.equals("57df623cd02240759fdf6ec280d833b4")) { //默认头像
+                if (headFlag.equals("aabfd7dc07704ed4adef568c0797adc2")) { //默认头像
                 }else{
                     //删除旧头像
                     Path filePath = Paths.get(basePath, fileName);
@@ -122,6 +121,7 @@ public class UserController {
     }
 
     @RequestMapping("/uniqueUser")
+    @CrossOrigin
     public boolean changeImage(String username){
         // 调用 MyBatis 查询数据库，检查用户名是否已存在
         User existingUser = userDao.getUserByUsername(username);

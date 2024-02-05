@@ -1,9 +1,9 @@
 <template>
     <div class="login_container">
-        <div class="lo_re">
+        <div v-show="show2" class="lo_re">
             <!-- 登录块 -->
             <transition name="el-zoom-in-top">
-                <div class="login_box" v-show="show2" style="background-color: rgb(255, 255, 255, 0.9);">
+                <div class="login_box" style="background-color: rgb(255, 255, 255, 0.9);">
                     <div class="avatar_box">
                         <img src="../assets/logo.jpg" alt />
                     </div>
@@ -38,20 +38,24 @@
             </transition>
             <!-- 注册提示 -->
             <transition name="el-zoom-in-top">
-                <div class="regist_box" v-show="show2" style="background-color: rgba(247 214 214 / 90%);">
-                    <div style=" margin-top: 80%;">
-                        <span style="font-size: 25px;">没有账号？</span><br>
-                        <span style="color: #4bacda;line-height: 40px; cursor: pointer; font-size: 18px;"
-                            @click="show2 = !show2, show = !show">&emsp;
+                <div class="regist_box" style="background-color: rgba(247 214 214 / 90%);">
+                    <div class="quzc" style=" margin-top: 78%;">
+                        <div style="margin-left: 8px;">
+                            <span style="font-size: 25px;">没有账号？</span><br>
+                        </div>
+                        <div style="text-align: center;">
+                            <span style="color: #4bacda;line-height: 40px; cursor: pointer; font-size: 18px;"
+                            @click="show2 = !show2, show = !show">
                             去注册</span>
+                        </div>
                     </div>
                 </div>
             </transition>
         </div>
-        <div class="lo_re2">
+        <div v-show="show" class="lo_re2">
             <!-- 注册块 -->
             <transition name="el-zoom-in-bottom">
-                <div class="registBox" v-show="show" style="background-color: rgb(255, 255, 255, 0.9);">
+                <div class="registBox" style="background-color: rgb(255, 255, 255, 0.9);">
                     <div style="font-size: 30px; width: 75px; margin: auto; margin-top: 6%;">注 册</div>
                     <!-- 表单区域 -->
                     <el-form ref="registFormRef" :model="registForm" :rules="loginRules" class="regist_form"
@@ -324,5 +328,27 @@ export default {
     font-size: 17px;
     display: flex;
     color: #e6a23c;
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+  .lo_re, .lo_re2 {
+    width: 100%;
+    left: 0;
+    top: 19%;
+    height: 50%;
+    transform: none;
+    display: grid;
+  }
+  .login_box, .registBox, .regist_box {
+    width: 100%;
+  }
+  .regist_box {
+    height: 89px !important;
+  }
+  .quzc {
+    margin-top: 2% !important;
+  }
+  
 }
 </style>

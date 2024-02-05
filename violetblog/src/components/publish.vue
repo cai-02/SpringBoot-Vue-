@@ -5,7 +5,7 @@
         <!-- 内容 -->
         <el-main>
             <div class="main-1">
-                <h1 style="font-size: 30px; color: rgb(251 244 160); margin-top: 125px;">
+                <h1 class="pubFont" style="font-size: 30px; color: rgb(251 244 160); margin-top: 125px;">
                     <span>每一次记录都是一种收获</span>
                 </h1>
             </div>
@@ -26,7 +26,7 @@
                                     <img class="cus" :src="this.imgUrl" style="max-width: 200px; max-height: 130px;"/>
                                 </span>
                             </el-form-item> -->
-                    <el-card style="width: 75%; margin-left: 8px;">
+                    <el-card style="width: 75%;">
                         <div>
                             <el-form :inline="true" class="demo-form-inline">
                                 <el-form-item label="标题" style="margin-right: 20px;">
@@ -38,21 +38,21 @@
                                             :label="item.categoryName"></el-option>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item style="margin-right: 0; float: right;">
+                                <el-form-item class="baocunPhone" style="margin-right: 0; float: right;">
                                     <el-popover placement="top" width="160" v-model="visible">
                                         <p>确定要清空内容吗？</p>
                                         <div style="text-align: center; margin: 0">
                                             <el-button type="primary" size="mini" @click="clean()">确定</el-button>
                                             <el-button size="mini" type="" @click="visible = false">取消</el-button>
                                         </div>
-                                        <el-button type="primary" slot="reference" plain>清空</el-button>
+                                        <el-button class="qinkong" type="primary" slot="reference" plain>清空</el-button>
                                     </el-popover>
                                     <el-button type="primary" style="margin-left: 15px;" @click="save()">保存</el-button>
                                 </el-form-item>
                             </el-form>
                         </div>
                         <div style="border: 1px solid #ccc;">
-                            <Toolbar style="border-bottom: 1px solid #ccc" :editor="editor" :defaultConfig="toolbarConfig"
+                            <Toolbar class="wangEdi" style="border-bottom: 1px solid #ccc" :editor="editor" :defaultConfig="toolbarConfig"
                                 :mode="mode" />
                             <Editor style="min-height: 500px; overflow-y: hidden; font-size: 18px;" v-model="html"
                                 :defaultConfig="editorConfig" :mode="mode" @onCreated="onCreated" />
@@ -93,7 +93,56 @@ export default Vue.extend({
             editor: null,
             html: '<p></p>',
             toolbarConfig: {},
-            editorConfig: { placeholder: '请输入内容...' },
+            editorConfig: {
+                placeholder: '请输入内容...',
+                MENU_CONF: {
+                    // 配置上传图片
+                    uploadImage: {
+                        // 后端上传地址，必填
+                        server: "http://localhost:9000/flies/noteP",
+                        timeout: 5 * 1000, // 5s 超时时间 
+                        fieldName: 'custom-fileName',
+                        //选择文件时的类型限制，默认为['image/*'] 如不想限制，则设置为 []
+                        allowedFileTypes: [],
+                        metaWithUrl: true, // 参数拼接到 url 上
+                        maxFileSize: 1000 * 1024 * 1024, //1g //设置大点 不然图片过大会报错
+                        base64LimitSize: 1000000 * 1024, // 1g 以下插入 base64
+
+                        // 上传前
+                        onBeforeUpload(file) {
+                            console.log('onBeforeUpload', file)
+                            // Message({
+                            //                 message: '图片正在上传中,请耐心等待',
+                            //                 duration: 0,
+                            //                 customClass: 'uploadTip',
+                            //                 iconClass: 'el-icon-loading',
+                            //                 showClose: true
+                            //               });
+                            return files;
+                            return file.url // 返回哪些文件可以上传
+                            // return false 会阻止上传
+                        },
+                        // 上传进度的回调函数
+                        onProgress(progress) {
+                            console.log('onProgress', progress)
+                        },
+                        // 单个文件上传成功之后
+                        onSuccess(file, res) {
+                            console.log('onSuccess', file.url, res)
+                        },
+                        // 单个文件上传失败
+                        onFailed(file, res) {
+                            alert(res.message)
+                            console.log('onFailed', file, res)
+                        },
+                        // 上传错误，或者触发 timeout 超时
+                        onError(file, err, res) {
+                            alert(err.message)
+                            console.error('onError', file, err, res)
+                        },
+                    }
+                }
+            },
             mode: 'default', // or 'simple'
             imgUrl: "",
             //文章数据对象
@@ -122,9 +171,9 @@ export default Vue.extend({
         //保存笔记
         async save() {
             //当前时间获取
-            var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+            // var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");  后端获取
             this.notes.author = JSON.parse(Cookies.get("user")).username;
-            this.notes.time = nowTime;
+            //this.notes.time = nowTime;
             this.notes.content = this.html;
 
             this.notes.userId = this.userId;
@@ -217,7 +266,7 @@ export default Vue.extend({
 .main-2 {
     background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(237, 255, 237, 0.7));
     width: 100%;
-    margin-top: 15%;
+    margin-top: 217px;
     z-index: -3;
 }
 
@@ -260,5 +309,43 @@ export default Vue.extend({
     width: 178px;
     height: 178px;
     display: block;
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+  .main-2 {
+    margin-top: 160px !important;
+  }
+  .page-container{
+    padding: 8px 0 0 0 !important;
+  }
+  /deep/ .el-card__body{
+    padding: 10px;
+  }
+  /deep/ .el-card.is-always-shadow {
+    width: 98% !important;
+  }
+  .el-main {
+    overflow: hidden !important;
+  }
+  .qinkong{
+    display: none;
+  }
+  .wangEdi{
+    display: none !important;
+  }
+  /deep/ .el-form-item__content{
+    max-width: 100px;
+  }
+  .baocunPhone{
+    position: fixed;
+    right: 5px;
+    z-index: 10;
+    bottom: -5px;
+  }
+  .pubFont{
+    font-size: 20px !important;
+    margin-top: 100px !important;
+  }
 }
 </style>

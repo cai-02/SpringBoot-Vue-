@@ -16,7 +16,7 @@
                     </el-popover>
                 </span>
             </div>
-            <div class="" style="width: 40%;">
+            <div class="messPh" style="width: 40%;">
                 <el-form ref="form" :model="form" :rules="editFormRules" label-width="80px">
                     <el-form-item label="用户名" prop="username">
                         <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
@@ -47,8 +47,9 @@
             </div>
         </el-card>
         <!-- 头像修改框 -->
-        <el-dialog title="修改头像" :visible.sync="changeDialogVisible" style="text-align: center; padding-bottom: -10px;"
+        <el-dialog title="修改头像" class="xiugaiTou" :visible.sync="changeDialogVisible" style="text-align: center; padding-bottom: -10px;"
             width="30%">
+            <!-- <el-upload ref="myUpload" class="upload-demo" drag action="http://47.108.66.150:9000/files/upload" :limit="1" -->
             <el-upload ref="myUpload" class="upload-demo" drag action="http://localhost:9000/files/upload" :limit="1"
                 :show-file-list="false" :before-upload="beforeAvatarUpload" :on-success="filesUploadSuccess">
                 <i class="el-icon-upload"></i>
@@ -72,6 +73,7 @@ export default {
                 userId: 0,
             },
             originalPassword: '', // 用于保存初始密码
+            originalName: '', // 用于保存初始用户名
             flag: false,  //密码显示
             userId: 0,
             headImg: "",
@@ -106,6 +108,7 @@ export default {
             this.form.password = res.password;
             // 在组件创建时保存初始密码
             this.originalPassword = this.form.password;
+            this.originalName = this.form.username;
         } else {
             return;
         }
@@ -145,8 +148,57 @@ export default {
                 if (!valid) return;
                 //检测用户名唯一性
                 const { data: res } = await this.$http.get(`uniqueUser?username=${this.form.username}`);
-                if (res != true) {
-                    return this.$message.error("用户名已存在！");
+                if (res != true) {   //用户已存在
+                    if (this.form.username !== this.originalName) {  //是否做过更改
+                        return this.$message.error("用户名已存在！");
+                    } else {
+                        // 在保存前检查密码是否被修改
+                        if (this.form.password !== this.originalPassword) {
+                            const comfirmResult = await this.$confirm("密码已更改将重新登录，是否继续？", "提示", {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).catch(err => err)
+                            if (comfirmResult != 'confirm') {   //取消
+                                return this.$message.info("已取消修改");
+                            }
+                            //console.log("form: " + JSON.stringify(this.form))
+                            const { data: res } = await this.$http.put("edituser", this.form);
+                            if (res != "success") {
+                                return this.$message.error("修改失败！");
+                            }
+                            this.$message.success("修改成功！");
+                            //清除数据
+                            this.$router.push("/login");
+                            Cookies.remove('user');
+                            Cookies.remove('rememberMe');
+                            Cookies.remove('success');
+                            Cookies.remove("user");
+                            Cookies.remove("userId");
+                            Cookies.remove("headimage");
+                            Cookies.remove("activePath");
+                            Cookies.remove("role");
+                            sessionStorage.clear("success");
+                        } else {
+                            const comfirmResult = await this.$confirm("此操作将修改您的个人信息，是否继续？", "提示", {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).catch(err => err)
+                            if (comfirmResult != 'confirm') {   //取消
+                                return this.$message.info("已取消修改");
+                            }
+                            //console.log("form: " + JSON.stringify(this.form))
+                            const { data: res } = await this.$http.put("edituser", this.form);
+                            if (res != "success") {
+                                return this.$message.error("修改失败！");
+                            }
+                            this.$message.success("修改成功！");
+                            //重新设置cookie
+                            const { data: res2 } = await this.$http.put(`getupdate?id=${this.userId}`);
+                            Cookies.set("user", JSON.stringify(res2), { expires: 7 });
+                        }
+                    }
                 } else {
                     // 在保存前检查密码是否被修改
                     if (this.form.password !== this.originalPassword) {
@@ -213,5 +265,16 @@ export default {
 
 /deep/ .el-upload .el-upload-dragger {
     width: auto;
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+  .messPh{
+    width: 100% !important;
+  }
+  /deep/ .xiugaiTou .el-dialog{
+    width: 80% !important;
+  }
+  
 }
 </style>

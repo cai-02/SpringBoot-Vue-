@@ -4,8 +4,8 @@
         <p-header></p-header>
         <!-- 内容 -->
         <el-main>
-            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(http://localhost:9000/files/cover/defaultCover)` }"> <!-- 文章背景图绑定 -->
-                <h1 style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
+            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(${randomBackground})` }"> <!-- 文章背景图绑定 -->
+                <h1 class="noteFont" style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
                     <span>{{ article.title }}</span>
                 </h1>
                 <h1 style="font-size: 20px; color: white; margin-top: 10px;">
@@ -19,12 +19,12 @@
                     <i-aside></i-aside>
                     <div class="recent-posts" style="width: 60%; margin-top: 5px; position: relative;">
                         <el-popover placement="top" trigger="hover" content="编辑" v-show="contentShow">
-                            <div class="el-icon-edit" slot="reference" @click="edit()"
+                            <div class="el-icon-edit bianji" slot="reference" @click="edit()"
                                 style="background: #39c5bb; width: 50px; color: white; padding-left: 1px;
                         padding-top: 15px; font-size: 19px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
                         </el-popover>
                         <el-popover placement="top" trigger="hover" content="确认" v-show="contentShow2">
-                            <div class="el-icon-check" slot="reference" @click="save()"
+                            <div class="el-icon-check bianji" slot="reference" @click="save()"
                                 style="background: #39c5bb; font-weight: bolder; width: 50px; color: white; padding-left: 1px;
                         padding-top: 12px; font-size: 25px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
                         </el-popover>
@@ -52,13 +52,13 @@
                                                 <el-button type="primary" size="mini" @click="clean()">确定</el-button>
                                                 <el-button size="mini" type="" @click="visible = false">取消</el-button>
                                             </div>
-                                            <el-button type="primary" slot="reference">清空</el-button>
+                                            <el-button class="qinkong" type="primary" slot="reference">清空</el-button>
                                         </el-popover>
                                     </el-form-item>
                                 </el-form>
                             </div>
                             <div style="border: 1px solid #ccc;">
-                                <Toolbar style="border-bottom: 1px solid #ccc" :editor="editor"
+                                <Toolbar class="wangEdi" style="border-bottom: 1px solid #ccc" :editor="editor"
                                     :defaultConfig="toolbarConfig" :mode="mode" />
                                 <Editor style="min-height: 500px; overflow-y: hidden; font-size: 18px;" v-model="html"
                                     :defaultConfig="editorConfig" :mode="mode" @onCreated="onCreated" />
@@ -111,7 +111,56 @@ export default Vue.extend({
             editor: null,
             html: '<p></p>',
             toolbarConfig: {},
-            editorConfig: { placeholder: '请输入内容...' },
+            editorConfig: { 
+                placeholder: '请输入内容...',
+                MENU_CONF: {
+                    // 配置上传图片
+                    uploadImage: {
+                        // 后端上传地址，必填
+                        server: "http://localhost:9000/flies/noteP",
+                        timeout: 5 * 1000, // 5s 超时时间 
+                        fieldName: 'custom-fileName',
+                        //选择文件时的类型限制，默认为['image/*'] 如不想限制，则设置为 []
+                        allowedFileTypes: [],
+                        metaWithUrl: true, // 参数拼接到 url 上
+                        maxFileSize: 1000 * 1024 * 1024, //1g //设置大点 不然图片过大会报错
+                        base64LimitSize: 1000000 * 1024, // 1g 以下插入 base64
+
+                        // 上传前
+                        onBeforeUpload(file) {
+                            console.log('onBeforeUpload', file)
+                            // Message({
+                            //                 message: '图片正在上传中,请耐心等待',
+                            //                 duration: 0,
+                            //                 customClass: 'uploadTip',
+                            //                 iconClass: 'el-icon-loading',
+                            //                 showClose: true
+                            //               });
+                            return files;
+                            return file.url // 返回哪些文件可以上传
+                            // return false 会阻止上传
+                        },
+                        // 上传进度的回调函数
+                        onProgress(progress) {
+                            console.log('onProgress', progress)
+                        },
+                        // 单个文件上传成功之后
+                        onSuccess(file, res) {
+                            console.log('onSuccess', file.url, res)
+                        },
+                        // 单个文件上传失败
+                        onFailed(file, res) {
+                            alert(res.message)
+                            console.log('onFailed', file, res)
+                        },
+                        // 上传错误，或者触发 timeout 超时
+                        onError(file, err, res) {
+                            alert(err.message)
+                            console.error('onError', file, err, res)
+                        },
+                    }
+                }
+            },
             mode: 'default', // or 'simple'
             visible: false,
             userId: 0,
@@ -136,6 +185,10 @@ export default Vue.extend({
         this.userId = JSON.parse(Cookies.get("userId"));   //获取用户id
         this.article.userId = this.userId;
         this.loadCategory()  //加载类别
+
+        //生成随机背景
+        const randomNumber = Math.floor(Math.random() * 11) + 1;
+        this.randomBackground = require(`@/assets/images/randomImage/${randomNumber}.jpg`);
     },
     methods: {
         onCreated(editor) {
@@ -207,6 +260,10 @@ export default Vue.extend({
             this.$refs.targetDiv.scrollIntoView({ behavior: 'auto' });
             const herf = window.location.href.split("=");
             this.getArticle(herf[herf.length - 1]);
+
+            //生成随机背景
+            const randomNumber = Math.floor(Math.random() * 11) + 1;
+            this.randomBackground = require(`@/assets/images/randomImage/${randomNumber}.jpg`);
         }
     },
     mounted() {
@@ -271,5 +328,37 @@ export default Vue.extend({
 
 .el-icon-edit:hover {
     background: orange !important;
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+  .noteFont{
+    font-size: 22px !important;
+  }
+
+  .main-1 {
+    height: 180px !important;
+  }
+  .bianji{
+    position: fixed !important;
+    top: 185px !important;
+    right: 10px !important;
+    z-index: 10 !important;
+  }
+  .wangEdi{
+    display: none !important;
+  }
+  .qinkong{
+    display: none;
+  }
+  /deep/ .el-form-item__content{
+    max-width: 100px;
+  }
+  /deep/ .el-card__body{
+    padding: 10px;
+  }
+  .page-container{
+    padding: 20px 5px 40px 5px !important;
+  }
 }
 </style>

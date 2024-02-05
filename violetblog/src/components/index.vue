@@ -6,7 +6,7 @@
         <el-main>
             <!-- 背景 -->
             <div class="main-1">
-                <h1 style="font-size: 40px; color: #fee4e0; margin-top: -10px; margin-bottom: 20px;">
+                <h1 class="logh1" style="font-size: 40px; color: #fee4e0; margin-top: -10px; margin-bottom: 20px;">
                     <span>风会代替你去往任何地方</span>
                 </h1>
                 <div class="logot">
@@ -598,4 +598,30 @@ body {
     background-color: #ffffff !important;
     color: #000000 !important;
 }
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+  .aside-content {
+    display: none;
+  }
+  .page-container {
+    width: 100% !important;
+  }
+  .recent-posts{
+    width: 100% !important;
+  }
+  .wave-body, .wave-body2 {
+    width: 400% !important;
+  }
+  .logh1{
+    font-size: 27px !important;
+  }
+  .logot{
+    font-size: 14px !important;
+  }
+  .content-title{
+    max-width: 260px !important;
+  }
+}
+
 </style>

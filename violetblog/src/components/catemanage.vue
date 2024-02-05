@@ -9,12 +9,12 @@
             <!-- 主内容部分 -->
             <div class="main-2">
                 <div class="page-title" style="text-align: center; margin-bottom: 10px;">
-                    <div style="font-size: 40px; font-weight: bold; color: rgb(255, 209, 125);">
+                    <div class="cateFont" style="font-size: 40px; font-weight: bold; color: rgb(255, 209, 125);">
                         <span>类别</span>
                     </div>
                 </div>
                 <div class="page-container" style="justify-content: center; position: relative;">
-                    <el-card
+                    <el-card class="overf"
                         style="width: 80%; background-color: rgb(255, 255, 255, 0.5); border-radius: 25px; padding: 0;">
                         <el-card v-for="(item, index) in category" :key="index" class="cate el-card-two"
                             :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
@@ -22,7 +22,7 @@
                             <el-checkbox v-if="showCheckboxes && item.categoryName != '默认'" v-model="checkedItems"
                                 :label="item.categoryId" @change="handleCheckboxChange" class="card-checkbox"
                                 style="position: absolute; top: 5px; left: 5px;"></el-checkbox>
-                            <div @click="toCategory(item.categoryId)"
+                            <div class="cateNamee" @click="toCategory(item.categoryId)"
                                 style="padding: 19px 35px; font-size: 25px; font-weight: bold; height: 50px; color: white; text-align: center; margin-top: 5px; white-space: normal; word-break: break-all; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
                                 <span class="category-name">{{ item.categoryName }}</span>
                             </div>
@@ -35,7 +35,7 @@
                         </div>
                     </el-popover>
                     <el-popover placement="top" trigger="hover" content="添加">
-                        <div slot="reference" @click="addDialogVisible = true"
+                        <div class="tianjia" slot="reference" @click="addDialogVisible = true"
                             style="background: #39c5bb; width: 65px; color: white;
                         font-size: 19px; height: 65px; border-radius: 50%; position: absolute; right: 76px; cursor: pointer;">
                             <span class="el-icon-plus"
@@ -43,14 +43,14 @@
                         </div>
                     </el-popover>
                     <div>
-                        <el-button v-if="showDelete" type="danger" size="mini" @click="deleteCate()"
+                        <el-button class="duox1" v-if="showDelete" type="danger" size="mini" @click="deleteCate()"
                             style="position: absolute; top: 100px; right: 80px;">删除</el-button>
-                        <el-button v-if="showDelete" type="success" size="mini" plain @click="closeCheck"
+                        <el-button class="duox2" v-if="showDelete" type="success" size="mini" plain @click="closeCheck"
                             style="position: absolute; top: 139px; right: 80px;">取消</el-button>
                     </div>
                     <!-- 新增类别区域 -->
                     <div>
-                        <el-dialog title="添加分类" :visible.sync="addDialogVisible" @close="addDialogClosed()" width="35%">
+                        <el-dialog class="wwid" title="添加分类" :visible.sync="addDialogVisible" @close="addDialogClosed()" width="35%">
                             <el-form :model="cate" label-width="65px" :rules="addFormRules" ref="cate">
                                 <el-form-item label="类名" prop="categoryName">
                                     <el-input placeholder="请输入分类名" v-model="cate.categoryName"></el-input>
@@ -160,8 +160,8 @@ export default Vue.extend({
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(async () => {
-                    const { data: res } = await this.$http.delete(`deleteCate/${this.checkedItems.join(',')}`);
-                    if (res == "success") { 
+                    const { data: res } = await this.$http.delete(`deleteCate/${this.checkedItems.join(',')}/${this.userId}`);
+                    if (res == "success") {
                         this.$message.success("删除成功！")
                         this.loadCategory();
                         this.showCheckboxes = !this.showCheckboxes;
@@ -261,4 +261,45 @@ export default Vue.extend({
 
 /deep/ .el-checkbox__label {
     display: none;
-}</style>
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+    .tianjia {
+        right: 8px !important;
+        top: -50px !important
+    }
+    .duox1{
+        top: 60px !important;
+        right: 9px !important;
+    }
+    .duox2{
+        top: 100px !important;
+        right: 9px !important;
+    }
+    .overf {
+        overflow: auto !important;
+        width: 95% !important;
+    }
+    /deep/ .wwid .el-dialog{
+        width: 75% !important;
+    }
+    .page-container{
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .cateFont{
+        font-size: 30px !important;
+    }
+    .cate{
+        max-width: 170px !important;
+        height: 60px !important;
+    }
+    .cateNamee{
+        padding: 19px 20px !important;
+        margin-top: 0px !important;
+        font-size: 19px !important;
+        height: 40px !important;        ;
+    }
+}
+</style>

@@ -5,8 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.cai.violetcai.bean.Article;
 import com.cai.violetcai.bean.Category;
+import com.cai.violetcai.bean.User;
 import com.cai.violetcai.dao.ArticleDao;
 import com.cai.violetcai.dao.CategoryDao;
+import com.cai.violetcai.dao.UserDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,29 +31,16 @@ class VioletCaiApplicationTests {
     @Autowired
     CategoryDao categoryDao;
 
+    @Autowired
+    UserDao userDao;
+
     @Test
     void contextLoads() {
-        deleteFile("e5c9861dc3bc4a9f9b288b060bbc7a62");
-    }
-
-
-    public String deleteFile(String flag) {
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
-        List<String> fileNames = FileUtil.listFileNames(basePath);   // 获取所有文件名称
-        String fileName = fileNames.stream().filter(name -> name.contains(flag)).findAny().orElse("");
-
-        if (StrUtil.isNotEmpty(fileName)) {
-            try {
-                Path filePath = Paths.get(basePath, fileName);
-                Files.delete(filePath);
-                return "文件删除成功";
-            } catch (IOException e) {
-                // 记录日志或返回适当的错误消息
-                return "文件删除失败";
-            }
-        } else {
-            return "未找到匹配的文件";
+        List<User> users = userDao.getAllUser("%%", 0, 5);
+        for(User user : users){
+            System.out.println(user);
         }
     }
+
 
 }

@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,9 +70,10 @@ public class ArticleController {
         return res_String;
     }
 
-    //保持笔记
+    //保存笔记
     @RequestMapping("/addArticle")
     public String addArticle(@RequestBody Article notes){
+        notes.setTime(LocalDateTime.now());
         int categoryId = categoryDao.getCategoryId(notes.getUserId(), notes.getCategoryName());
         notes.setCategoryId(categoryId);
         int i = articleDao.addArticle(notes);

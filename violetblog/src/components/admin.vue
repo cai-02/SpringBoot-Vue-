@@ -6,12 +6,12 @@
                 <img style="margin-left: 2px;" src="../assets/logo.jpg" alt />
                 <span style="font-size: 22px; color: #18bf2d;">风之谷</span>
             </div>
-            <el-button type="primary" @click="logout()">安全退出</el-button>
+            <el-button type="primary" @click="logout()">退出</el-button>
         </el-header>
         <!-- 主体 -->
         <el-container>
             <!-- 侧边栏 -->
-            <el-aside :width="isCollapse?'64px':'200px'">
+            <el-aside class="asideWid" :width="isCollapse?'64px':'200px'">
                 <div class="toggle-button" style="background-color: #fed7dd; color: #18bf2d;" @click="toggleCollapse()">|||</div>
                 <el-menu background-color="white" text-color="black" active-text-color="#409eff" active-background-color="black" :collapse="isCollapse" 
                 :collapse-transition="false" :router="true" :default-active="activePath">
@@ -179,5 +179,13 @@ img {
 }
 /deep/.el-menu .el-menu-item.is-active {
     background: #e0fff1 !important;
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+  .asideWid{
+    display: none;
+  }
+  
 }
 </style>

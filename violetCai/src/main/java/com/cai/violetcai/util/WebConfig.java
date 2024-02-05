@@ -2,10 +2,12 @@ package com.cai.violetcai.util;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration     //声明全局配置类
-public class WebConfig extends WebMvcConfigurerAdapter {
+@EnableWebMvc
+public class WebConfig implements WebMvcConfigurer {
 
     /*
     * 1.任何东西都允许跨域
@@ -17,7 +19,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("Http://localhost:8080", "null")
+                .allowedOrigins("http://localhost:8080", "null")
+                //.allowedOrigins("http://cjl02.top", "null")
                 .allowedMethods("GET", "POST", "PUT", "OPTIONS", "DELETE")
                 .allowCredentials(true)
                 .maxAge(3600);

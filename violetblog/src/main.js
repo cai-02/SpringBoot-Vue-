@@ -15,6 +15,7 @@ import axios from 'axios'
 //挂载axios
 Vue.prototype.$http = axios
 //设置访问根路径
+//axios.defaults.baseURL = "http://47.108.66.150:9000"
 axios.defaults.baseURL = "http://localhost:9000"
 
 //时间格式

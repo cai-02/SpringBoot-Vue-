@@ -22,4 +22,6 @@ public interface CategoryDao {
     public int addCategory(Category category);
     //删除分类
     public int deleteMultipleCate(List<Integer> id);
+    //移动分类
+    public int moveCate(List<Integer> id, int userId);
 }

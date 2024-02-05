@@ -35,4 +35,13 @@
         </foreach>
     </delete>
 
+<!--    移动分类，文章移入默认分类-->
+    <update id="moveCate">
+        update notes set category_id=(SELECT category_id from category
+        where category_name='默认' and user_id=#{userId}), category_name='默认' where category_id IN
+        <foreach collection="id" item="categoryId" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </update>
+
 </mapper>

@@ -4,8 +4,7 @@
         <p-header></p-header>
         <!-- 内容 -->
         <el-main>
-            <div class="main-1" ref="targetDiv"
-                :style="{ backgroundImage: `url(http://localhost:9000/files/cover/defaultCover)` }"> <!-- 文章背景图绑定 -->
+            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(${randomBackground})` }">
                 <h1 style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
                     <span>{{ this.categoryName }} -> {{ this.noteCounts }}篇</span>
                 </h1>
@@ -124,6 +123,7 @@ export default Vue.extend({
             categoryName: "",
             noteCounts: 0,     //笔记数量
             isBackground: true,
+            randomBackground: '',   //随机背景
         };
     },
     created() {
@@ -136,6 +136,9 @@ export default Vue.extend({
         this.userId = Cookies.get('userId');
 
         this.getNotes();
+        //生成随机背景
+        const randomNumber = Math.floor(Math.random() * 11) + 1;
+        this.randomBackground = require(`@/assets/images/randomImage/${randomNumber}.jpg`);
     },
     methods: {
         //分页触发动作
@@ -183,7 +186,7 @@ export default Vue.extend({
             }
         },
     },
-    //监听路由变化，刷新页面数据
+    //监听路由参数变化，刷新页面数据
     watch: {
         '$route'(to, from) {
             this.$refs.targetDiv.scrollIntoView({ behavior: 'auto' });
@@ -193,6 +196,10 @@ export default Vue.extend({
             //用户名
             this.username = JSON.parse(Cookies.get("user")).username;   //获取用户名
             this.getNotes();
+
+            //生成随机背景
+            const randomNumber = Math.floor(Math.random() * 11) + 1;
+            this.randomBackground = require(`@/assets/images/randomImage/${randomNumber}.jpg`);
         }
     },
     mounted() {

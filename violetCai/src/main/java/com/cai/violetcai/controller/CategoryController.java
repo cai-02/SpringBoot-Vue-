@@ -5,6 +5,7 @@ import com.cai.violetcai.bean.Article;
 import com.cai.violetcai.bean.Category;
 import com.cai.violetcai.dao.CategoryDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -55,10 +56,12 @@ public class CategoryController {
     }
 
     //删除分类
-    @RequestMapping("/deleteCate/{id}")
-    public String deleteCate(@PathVariable List<Integer> id){
+    @Transactional   //事务管理
+    @RequestMapping("/deleteCate/{id}/{userId}")
+    public String deleteCate(@PathVariable List<Integer> id, @PathVariable int userId){
         int i = categoryDao.deleteMultipleCate(id);
-        return i > 0 ? "success":"error";
+        int j = categoryDao.moveCate(id, userId);
+        return j > 0 || i > 0 ? "success":"error";
     }
 
 }
