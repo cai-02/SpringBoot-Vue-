@@ -5,7 +5,7 @@
         <!-- 内容 -->
         <el-main>
             <div class="main-1">
-                <h1 class="pubFont" style="font-size: 30px; color: rgb(251 244 160); margin-top: 125px;">
+                <h1 class="pubFont" style="font-size: 30px; color: rgb(254, 228, 224); margin-top: 125px;">
                     <span>每一次记录都是一种收获</span>
                 </h1>
             </div>
@@ -252,7 +252,7 @@ export default Vue.extend({
 }
 
 .main-1 {
-    background-image: url(../assets/images/publishbj.jpg);
+    background-image: url(../assets/images/zhuti1.jpg);
     background-size: cover;
     position: fixed;
     display: flex;
@@ -264,7 +264,7 @@ export default Vue.extend({
 }
 
 .main-2 {
-    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(237, 255, 237, 0.7));
+    background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(237, 255, 237, 0.8));
     width: 100%;
     margin-top: 217px;
     z-index: -3;

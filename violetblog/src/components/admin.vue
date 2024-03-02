@@ -57,8 +57,9 @@ export default {
                 '100':'el-icon-s-custom',
                 '200':'el-icon-s-data',
                 '201':'el-icon-user-solid',
-                '101':'el-icon-s-unfold',
-                '102':'el-icon-s-comment',
+                '202':'el-icon-message-solid',
+                '101':'el-icon-s-order',
+                '102':'el-icon-s-management',
             },
             activePath: '/message',   //默认路径
             userId: 0,

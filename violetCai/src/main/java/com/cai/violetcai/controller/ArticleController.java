@@ -74,6 +74,7 @@ public class ArticleController {
     @RequestMapping("/addArticle")
     public String addArticle(@RequestBody Article notes){
         notes.setTime(LocalDateTime.now());
+        notes.setPubTime(LocalDateTime.now());
         int categoryId = categoryDao.getCategoryId(notes.getUserId(), notes.getCategoryName());
         notes.setCategoryId(categoryId);
         int i = articleDao.addArticle(notes);
@@ -104,6 +105,13 @@ public class ArticleController {
         int categoryId = categoryDao.getCategoryId(notes.getUserId(), notes.getCategoryName());
         notes.setCategoryId(categoryId);
         int i = articleDao.updateArticle(notes);
+        return i > 0 ? "success":"error";
+    }
+
+    //更新分类
+    @RequestMapping("/updateArticleCate")
+    public String updateArticleCate(@RequestParam("cateName") String cateName, @RequestParam("categoryId") int categoryId, @RequestParam("noteId") int noteId){
+        int i = articleDao.updateArticleCate(cateName, categoryId, noteId);
         return i > 0 ? "success":"error";
     }
 

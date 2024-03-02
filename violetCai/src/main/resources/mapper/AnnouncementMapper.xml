@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.violetcai.dao.AnnouncementDao">
+
+    <select id="getAnnouncement" resultType="com.cai.violetcai.bean.Announcement">
+        select * from announcement order by ann_id desc limit 1
+    </select>
+
+    <select id="getAllAnn" resultType="com.cai.violetcai.bean.Announcement">
+        select * from announcement limit #{pageStart}, #{pageSize}
+    </select>
+
+    <select id="getAnnCounts" resultType="int">
+        select count(*) from announcement
+    </select>
+
+    <insert id="addAnn">
+        insert into announcement(content, user_id, time) values (#{content}, #{userId}, #{time})
+    </insert>
+
+    <delete id="deleteAnn" parameterType="int">
+        DELETE from announcement where ann_id=#{annId}
+    </delete>
+
+</mapper>

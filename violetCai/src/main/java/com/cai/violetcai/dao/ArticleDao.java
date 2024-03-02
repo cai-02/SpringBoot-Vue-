@@ -28,6 +28,7 @@ public interface ArticleDao {
     //笔记更新
     public int updateArticle(Article notes);
     public int updateArticleAuthorById(@Param("username") String author, @Param("userId") int userId);
+    public int updateArticleCate(@Param("cateName") String cateName, @Param("categoryId") int categoryId, @Param("noteId") int noteId);
     //笔记删除
     public int deleteArticle(int id);
 

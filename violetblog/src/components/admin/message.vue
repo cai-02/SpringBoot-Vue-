@@ -2,7 +2,7 @@
     <div>
         <!-- 面包屑导航 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>我的后台</el-breadcrumb-item>
             <el-breadcrumb-item>个人中心</el-breadcrumb-item>
             <el-breadcrumb-item>信息管理</el-breadcrumb-item>
         </el-breadcrumb>
@@ -31,15 +31,6 @@
                     <el-form-item label="邮箱">
                         <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
                     </el-form-item>
-                    <!-- <el-form-item label="性别">
-                        <el-radio-group v-model="form.gender">
-                        <el-radio value="男" label="男"></el-radio>
-                        <el-radio value="女" label="女"></el-radio>
-                        </el-radio-group>
-                    </el-form-item> -->
-                    <!-- <el-form-item label="简介">
-                        <el-input type="textarea" v-model="form.introduction"></el-input>
-                    </el-form-item> -->
                     <el-form-item style="float: right;">
                         <el-button type="primary" @click="editorMessage()">立即修改</el-button>
                     </el-form-item>
@@ -49,7 +40,6 @@
         <!-- 头像修改框 -->
         <el-dialog title="修改头像" class="xiugaiTou" :visible.sync="changeDialogVisible" style="text-align: center; padding-bottom: -10px;"
             width="30%">
-            <!-- <el-upload ref="myUpload" class="upload-demo" drag action="http://47.108.66.150:9000/files/upload" :limit="1" -->
             <el-upload ref="myUpload" class="upload-demo" drag action="http://localhost:9000/files/upload" :limit="1"
                 :show-file-list="false" :before-upload="beforeAvatarUpload" :on-success="filesUploadSuccess">
                 <i class="el-icon-upload"></i>

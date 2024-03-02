@@ -1,12 +1,13 @@
 <template>
     <el-header :class="{ 'hidden': isNavHidden }">
         <div>
-            <span style="float: left; font-size: 22px; color: #fee4e0; font-weight: bold;">风之谷</span>
+            <span @click="shouye()" style="float: left; font-size: 22px; color: #fee4e0; font-weight: bold;">风之谷</span>
         </div>
         <!-- 头像 -->
         <div style="float: right;">
             <el-popover placement="top-start" width="" trigger="hover">
-                <el-button class="phoneHou" style="display: none; margin-bottom: 8px;" type="success" plain @click="intoSystem()">资料</el-button>
+                <el-button class="phoneHou" style="display: none; margin-bottom: 8px;" type="success" plain
+                    @click="intoSystem()">资料</el-button>
                 <el-button type="warning" plain @click="exit()" style="margin-left: 0;">退出</el-button>
                 <div slot="reference" style="margin-top: 7px; margin-right: 8px; height: 45px; margin-left: 5px;">
                     <img :src="this.headImg" width="45px" height="45px" style="border-radius: 50%;" alt />
@@ -29,25 +30,25 @@
                 </svg>
                 首页
             </el-menu-item>
-            <el-menu-item class="" index="3" @click="category()">
+            <el-menu-item class="leib" index="3" @click="category()">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-fenlei-"></use>
                 </svg>
                 类别
             </el-menu-item>
-            <el-menu-item class="liu" index="4">
+            <el-menu-item class="liu" index="4" @click="toLiuyan">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-liuyan"></use>
                 </svg>
                 留言
             </el-menu-item>
-            <el-menu-item class="xiang" index="5">
+            <el-menu-item class="xiang" index="5" @click="toXiangce">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-xiangce"></use>
                 </svg>
                 相册
             </el-menu-item>
-            <el-menu-item class="guan" index="6">
+            <el-menu-item class="guan" index="6" @click="guanyu">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-guanyuwomen"></use>
                 </svg>
@@ -59,9 +60,32 @@
                 </svg>
                 后台
             </el-menu-item>
+            <el-submenu index="2" class="fusel">
+                <template slot="title">选项</template>
+                <el-menu-item class="sel" index="2-1" @click="category()">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-fenlei-"></use>
+                    </svg>
+                    类别
+                </el-menu-item>
+                <el-menu-item class="sel" index="2-2" @click="toXiangce">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-xiangce"></use>
+                    </svg>
+                    相册
+                </el-menu-item>
+                <el-menu-item class="sel" index="2-3" @click="guanyu">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-guanyuwomen"></use>
+                    </svg>
+                    关于
+                </el-menu-item>
+            </el-submenu>
+
         </el-menu>
         <!-- 搜索框 -->
-        <el-dialog :visible.sync="centerDialogVisible" :modal="false" width="35%" background="rgb(255,255,255,0.9)" @close="cleanS()">
+        <el-dialog :visible.sync="centerDialogVisible" :modal="false" width="35%" background="rgb(255,255,255,0.9)"
+            @close="cleanS()">
             <div>
                 <el-input placeholder="请输入笔记标题" v-model="artTitle" clearable @clear="cleanEnt()">
                     <el-button slot="append" icon="el-icon-search" style="color: black;" @click="searchNote()"></el-button>
@@ -72,22 +96,18 @@
                     <span style="font-size: 17px;">抱歉！没有找到您想要的内容</span>
                 </div>
                 <div v-if="visC" style="text-align: left; font-size: 17px;">
-                    <ul class="searchUl"
-                        style="list-style-type: none; padding-left: 0; margin: 0;">
-                        <li v-for="(item, index) in searchNotes" :key="index" @click="toArticle(item.noteId)">{{ item.title }}</li>
+                    <ul class="searchUl" style="list-style-type: none; padding-left: 0; margin: 0;">
+                        <li v-for="(item, index) in searchNotes" :key="index" @click="toArticle(item.noteId)">{{ item.title
+                        }}</li>
                     </ul>
                 </div>
             </div>
         </el-dialog>
-        <!-- 搜索框 -->
-        <!-- <el-card class="el-card cc" v-if="visSearch"
-            style="width: 35%; min-height: 300px; margin: 70px auto; background: rgb(2552, 255, 255, 0.9); border-radius: 8px;">
-            <el-col :span="10" style="width: 100%;">
-                <el-input placeholder="请输入用户名" v-model="queryInfo.query" clearable @clear="">
-                    <el-button slot="append" icon="el-icon-search" style="color: black;" @click=""></el-button>
-                </el-input>
-            </el-col>
-        </el-card> -->
+        <!-- 关于 -->
+        <el-dialog class="guanyuDio" title="提示" :modal="false" :visible.sync="dialogVisible" width="30%">
+            <span style="line-height: 30px; font-size: 17px;">&emsp;本站致力于让每个人拥有快捷、方便、可靠的笔记平台，但由于时间及技术原因，部分功能还尚未完成，
+                且难免存在部分bug，如有任何问题请联系站长（363839026@qq.com）<br>感谢您对本平台的支持！</span>
+        </el-dialog>
     </el-header>
 </template>
   
@@ -112,6 +132,7 @@ export default {
             visC: false,
             searchNotes: [],
             articleCounts: 0,
+            dialogVisible: false,  //关于显示
         };
     },
     mounted() {
@@ -135,8 +156,9 @@ export default {
             this.activeIndex = '0';
         } else if (herf[herf.length - 1] == 'catemanage') {
             this.activeIndex = '3';
+        } else if (herf[herf.length - 1] == 'pictur') {
+            this.activeIndex = '5';
         }
-
         this.userId = Cookies.get("userId");
     },
     methods: {
@@ -182,9 +204,9 @@ export default {
         },
         //去到笔记
         toArticle(id) {
-            if(this.$route.fullPath != ('/notes?id=' + id)){  //判断导航是否重复
+            if (this.$route.fullPath != ('/notes?id=' + id)) {  //判断导航是否重复
                 this.$router.push({ path: '/notes?id=' + id });
-            }else{
+            } else {
                 location.reload();
             }
             this.cleanS();
@@ -223,6 +245,22 @@ export default {
         menuSearch() {
             this.centerDialogVisible = true;
         },
+        //去到留言
+        toLiuyan() {
+            this.$message.warning('该功能暂未开放！');
+        },
+        //去到相册
+        toXiangce() {
+            if (this.$route.path == "/pictur") {
+                location.reload();
+            } else {
+                this.$router.push({ path: '/pictur' })
+            }
+        },
+        //关于
+        guanyu() {
+            this.dialogVisible = true;
+        },
         //导航栏显示隐藏
         handleScroll() {
             // 获取当前滚动的垂直位置
@@ -233,6 +271,7 @@ export default {
                 // 向下滚动，隐藏导航栏
                 this.isNavHidden = true;
                 this.centerDialogVisible = false;
+                this.dialogVisible = false;
             } else {
                 // 向上滚动，显示导航栏
                 this.isNavHidden = false;
@@ -295,6 +334,22 @@ export default {
     cursor: pointer;
 }
 
+.fusel {
+    display: none;
+}
+
+/deep/.el-submenu__title {
+    font-size: 18px !important;
+}
+
+/deep/ .el-submenu__title i {
+    color: white;
+}
+
+.el-menu .sel {
+    background-color: rgba(102, 101, 101, 0.8) !important;
+}
+
 /deep/ .el-dialog {
     background: rgba(255, 255, 255, 0.9);
     max-height: 400px;
@@ -312,17 +367,36 @@ export default {
     padding: 0px 10px 10px 10px;
 }
 
-/* 手机端样式 */
-@media screen and (max-width: 767px) {
-  .shou, .liu, .xiang, .guan, .hou {
-    display: none !important;
-  }
-  .phoneHou{
-    display: block !important;
-  }
-  /deep/ .el-dialog {
-    width: 73% !important;
-  }
+/deep/ .guanyuDio .el-dialog__body {
+    line-height: 30px;
+    margin-top: 0;
 }
 
-</style>
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+
+    .shou,
+    .liu,
+    .xiang,
+    .guan,
+    .hou,
+    .leib {
+        display: none !important;
+    }
+
+    .phoneHou {
+        display: block !important;
+    }
+
+    /deep/ .el-dialog {
+        width: 73% !important;
+    }
+
+    .fusel {
+        display: block;
+    }
+
+    /deep/ .el-menu .sel[data-v-29e8c3c6] {
+        background-color: rgba(102, 101, 101, 0.8) !important;
+    }
+}</style>

@@ -6,7 +6,7 @@
                 <img @click="toManage" class="headIm cus" :src="this.headImg" width="100px" height="100px"
                     style="border-radius: 50%;" />
             </span>
-            <div style="margin-top: 5px;">
+            <div style="margin-top: 5px;white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
                 <span style="font-size: 24px;">{{ userName }}</span>
             </div>
             <div style="margin-top: 15px;">
@@ -28,8 +28,8 @@
                 </svg>
                 <span style="font-size: 20px;">公告</span>
             </div>
-            <div class="aside-items-sty" style="white-space: normal;">
-                <span>欢迎大家使用本平台，有任何问题请联系：363839026@qq.com</span>
+            <div class="aside-items-sty" style="white-space: normal; line-height: 25px;">
+                <span>{{ announcement }}</span>
             </div>
         </el-card>
         <!-- 最近更改 -->
@@ -98,45 +98,43 @@
             </div>
         </div>
         <!-- 相册 -->
-        <el-card class="preson-message el-card-four" style="background-color: #ffefcd;">
-            <div style="text-align: left;">
-                <svg class="icon icon-st" aria-hidden="true">
-                    <use xlink:href="#icon-xiangce"></use>
-                </svg>
-                <span style="font-size: 20px;">图集</span>
-            </div>
-            <div class="aside-items-sty" style="white-space: normal;">
-                <span>急急急！功能正在紧急更新中</span>
+        <el-card class="preson-message el-card-four" style="background-color: #ffefcd; cursor: pointer;">
+            <div @click="toXiangce()">
+                <div style="text-align: left;">
+                    <svg class="icon icon-st" aria-hidden="true">
+                        <use xlink:href="#icon-xiangce"></use>
+                    </svg>
+                    <span style="font-size: 20px;">图集</span>
+                </div>
+                <div class="aside-items-sty" style="white-space: normal;">
+                    <span>记住每一个瞬间，珍藏每一份记忆</span>
+                </div>
             </div>
         </el-card>
-        <!-- 站长统计 -->
+        <!-- 生涯统计 -->
         <el-card class="preson-message el-card-two" style="margin-bottom: 0;">
             <div style="text-align: left;">
                 <svg class="icon icon-st" aria-hidden="true">
                     <use xlink:href="#icon-tongji"></use>
                 </svg>
-                <span style="font-size: 20px;">站长统计</span>
+                <span style="font-size: 20px;">生涯统计<small style="color: gray;">（待更新）</small></span>
             </div>
             <div class="aside-items-sty">
                 <div class="web-count">
-                    <span>总访问量</span>
-                    <span class="count-num">10000 次</span>
+                    <span>使用天数</span>
+                    <span class="count-num">1 天</span>
                 </div>
                 <div class="web-count">
-                    <span>总文章数</span>
-                    <span class="count-num">1000 篇</span>
+                    <span>总笔记数</span>
+                    <span class="count-num">1 篇</span>
                 </div>
                 <div class="web-count">
-                    <span>总用户</span>
-                    <span class="count-num">1000 人</span>
+                    <span>总类别数</span>
+                    <span class="count-num">1 类</span>
                 </div>
                 <div class="web-count">
-                    <span>网站运行天数</span>
-                    <span class="count-num">14 天</span>
-                </div>
-                <div class="web-count">
-                    <span>最近更新</span>
-                    <span class="count-num">1 天前</span>
+                    <span>好友</span>
+                    <span class="count-num">0 人</span>
                 </div>
             </div>
         </el-card>
@@ -172,9 +170,10 @@ export default ({
             visibleCardCount: 5,    //默认显示五条类别
             moreText: "更多",
             showCateBut: false,
+            announcement: "",
         };
     },
-    created() {
+    async created() {
         this.userId = JSON.parse(Cookies.get("userId"));
         this.getArticleList();
         this.getArticleByTime();
@@ -187,6 +186,9 @@ export default ({
         this.cate.userId = this.userId;
         //加载类别
         this.loadCategory();
+        //加载公告
+        const { data: res } = await this.$http.get("getAnn");
+        this.announcement = res.data.content;
     },
     methods: {
         async getArticleList() {
@@ -275,6 +277,14 @@ export default ({
                 this.$router.push({ path: '/category/' + id });
             }
         },
+        //去到相册
+        toXiangce() {
+            if (this.$route.path == "/pictur") {
+                location.reload();
+            } else {
+                this.$router.push({ path: '/pictur' })
+            }
+        },
     },
 })
 </script>
@@ -320,4 +330,5 @@ export default ({
 .headIm:active {
     transform: rotate(-360deg);
     /* 在鼠标点击时逆时针旋转360度 */
-}</style>
+}
+</style>

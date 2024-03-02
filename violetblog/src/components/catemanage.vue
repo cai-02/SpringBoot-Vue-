@@ -15,7 +15,7 @@
                 </div>
                 <div class="page-container" style="justify-content: center; position: relative;">
                     <el-card class="overf"
-                        style="width: 80%; background-color: rgb(255, 255, 255, 0.5); border-radius: 25px; padding: 0;">
+                        style="width: 80%; background-color: rgb(255, 255, 255, 0.6); border-radius: 25px; padding: 0;">
                         <el-card v-for="(item, index) in category" :key="index" class="cate el-card-two"
                             :style="{ 'background-color': getRandomColor(), height: '80px', cursor: 'pointer' }"
                             style="max-width: 250px; border-radius: 50px; position: relative; border-top-left-radius: 0px;">
@@ -44,9 +44,9 @@
                     </el-popover>
                     <div>
                         <el-button class="duox1" v-if="showDelete" type="danger" size="mini" @click="deleteCate()"
-                            style="position: absolute; top: 100px; right: 80px;">删除</el-button>
+                            style="position: fixed; bottom: 60px; right: 15px;">删除</el-button>
                         <el-button class="duox2" v-if="showDelete" type="success" size="mini" plain @click="closeCheck"
-                            style="position: absolute; top: 139px; right: 80px;">取消</el-button>
+                            style="position: fixed; bottom: 20px; right: 15px;">取消</el-button>
                     </div>
                     <!-- 新增类别区域 -->
                     <div>
@@ -65,11 +65,6 @@
                 </div>
             </div>
         </el-main>
-        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
-            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
-                <use xlink:href="#icon-shezhitianchong"></use>
-            </svg>
-        </div>
     </el-container>
 </template>
   
@@ -224,7 +219,7 @@ export default Vue.extend({
 }
 
 .main-1 {
-    background-image: url(../assets/images/publishbj.jpg);
+    background-image: url(../assets/images/publishbj1.jpg);
     background-size: cover;
     position: fixed;
     height: 100%;
@@ -270,12 +265,17 @@ export default Vue.extend({
         top: -50px !important
     }
     .duox1{
-        top: 60px !important;
-        right: 9px !important;
+        position: fixed !important;
+        bottom: 10px !important;
+        right: 15px !important;
+        top: initial !important
     }
     .duox2{
-        top: 100px !important;
-        right: 9px !important;
+        position: fixed !important;
+        bottom: 10px !important;
+        left: 5px !important;
+        top: initial !important;
+        right: initial !important;
     }
     .overf {
         overflow: auto !important;

@@ -6,6 +6,7 @@ import Test from '../components/test.vue'
 import Login from '../components/Login.vue'
 import Admin from '../components/admin.vue'
 import UserList from '../components/admin/UserList.vue'
+import AnnList from '../components/admin/annList.vue'
 import ArticleList from '../components/admin/articleList.vue'
 import Index from '../components/index.vue'
 import Message from '../components/admin/message.vue'
@@ -13,6 +14,8 @@ import Publish from '../components/publish.vue'
 import Notes from '../components/notes.vue'
 import Category from '../components/category.vue'
 import Catemanage from '../components/catemanage.vue'
+import MyFile from '../components/admin/myFile.vue'
+import Pictur from '../components/pictur.vue'
 
 Vue.use(VueRouter)
 
@@ -36,7 +39,8 @@ const routes = [
     children: [
       { path: "/message", component: Message },
       { path: "/user", component: UserList },
-      { path: "/article", component: ArticleList },
+      { path: "/myFile", component: MyFile },
+      { path: "/announcement", component: AnnList },
     ]
   },
   {
@@ -62,6 +66,11 @@ const routes = [
   {
     path: "/catemanage",
     component: Catemanage
+  }
+  ,
+  {
+    path: "/pictur",
+    component: Pictur
   }
   ,
 ]

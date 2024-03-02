@@ -31,7 +31,7 @@
     </select>
 
     <update id="updateState">
-        update user set state = #{state} where id = #{id}
+        update user set state = #{state} where user_id = #{id}
     </update>
 
     <update id="changeImage">
@@ -43,7 +43,7 @@
     </insert>
 
     <delete id="deleteUser">
-        delete from user where id = #{id}
+        delete from user where user_id = #{id}
     </delete>
 
     <select id="getUpdateUser" resultType="com.cai.violetcai.bean.User">

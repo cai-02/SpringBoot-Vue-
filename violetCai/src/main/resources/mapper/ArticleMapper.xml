@@ -12,7 +12,7 @@
     </select>
 
     <select id="getAllArticleByUserId" resultType="com.cai.violetcai.bean.Article">
-        select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id
+        select a.note_id, a.title, a.author, a.content, a.time, a.category_id, b.category_name from notes a join category b on a.category_id = b.category_id
         where a.user_id = #{userId}
         <if test="title != null">
             and a.title like #{title}
@@ -49,11 +49,11 @@
     </select>
 
     <insert id="addArticle">
-        insert into notes(title, author, content, time, category_id, category_name, user_id) values (#{title}, #{author}, #{content}, #{time}, #{categoryId}, #{categoryName}, #{userId})
+        insert into notes(title, author, content, time, category_id, category_name, user_id, pub_time) values (#{title}, #{author}, #{content}, #{time}, #{categoryId}, #{categoryName}, #{userId}, #{pubTime})
     </insert>
 
     <select id="getArticleMessage" resultType="com.cai.violetcai.bean.Article">
-        select a.note_id, a.title, a.author, a.content, a.time, b.category_name from notes a join category b on a.category_id = b.category_id where note_id = #{id}
+        select a.note_id, a.title, a.author, a.content, a.time, a.pub_time, b.category_name from notes a join category b on a.category_id = b.category_id where note_id = #{id}
     </select>
 
     <update id="updateArticle">
@@ -62,6 +62,10 @@
 
     <update id="updateArticleAuthorById">
         update notes set author=#{username} where user_id=#{userId}
+    </update>
+
+    <update id="updateArticleCate">
+        update notes set category_name=#{cateName}, category_id=#{categoryId} where note_id=#{noteId}
     </update>
 
     <delete id="deleteArticle" parameterType="int">

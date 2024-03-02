@@ -6,7 +6,12 @@
         <el-main>
             <!-- 背景 -->
             <div class="main-1">
-                <h1 class="logh1" style="font-size: 40px; color: #fee4e0; margin-top: -10px; margin-bottom: 20px;">
+                <!-- 通知 -->
+                <div class="scrolling-container"
+                    style="display: none; position: absolute; top: 100px; color: #f891a3; font-size: 15px;">
+                    {{ notification }}
+                </div>
+                <h1 class="logh1" style="font-size: 40px; color: #fee4e0; margin-top: -300px; margin-bottom: 20px;">
                     <span>风会代替你去往任何地方</span>
                 </h1>
                 <div class="logot">
@@ -15,7 +20,7 @@
             </div>
             <!-- 向下箭头 -->
             <div class="arrow-container"
-                style="top: 86vh; position: absolute; cursor: pointer; margin: auto; left: 0; right: 0; width: 45px;"
+                style="top: 44vh; position: absolute; cursor: pointer; margin: auto; left: 0; right: 0; width: 45px;"
                 @click="scrollOneScreen">
                 <i class="el-icon-arrow-down" style="color: white; font-size: 45px; font-weight: 900 !important;"></i>
             </div>
@@ -64,6 +69,7 @@
             </div>
             <!-- 主内容部分 -->
             <div class="main-2" ref="targetDiv">
+
                 <div class="page-container">
                     <!-- 左侧侧边栏引用 -->
                     <i-aside :key="asideKey"></i-aside>
@@ -85,7 +91,8 @@
                                 style="border-bottom: 1px dashed rgb(168, 164, 164); padding-bottom: 8px; margin-bottom: 23px;">
                             </div>
                             <!-- 笔记存放区 -->
-                            <div v-if="noteVisi" style="margin-bottom: 30px; font-size: 25px; color: #ff7e94;">暂无笔记，快新建一篇吧！</div>
+                            <div v-if="noteVisi" style="margin-bottom: 30px; font-size: 25px; color: #ff7e94;">暂无笔记，快新建一篇吧！
+                            </div>
                             <div v-for="(item, index) in articleList" :key="index">
                                 <el-card class="article-cover el-card-two" body-style="padding: 0">
                                     <div class="parent-div-one" @click="toArticle(item.noteId)">
@@ -94,14 +101,21 @@
                                                 <div class="content-title">
                                                     <span class="cus2">{{ item.title }}</span>
                                                 </div>
-                                                <el-popover placement="top" trigger="hover" content="分享">
-                                                    <div slot="reference" class="el-icon-s-promotion"
+                                                <el-popover placement="top" trigger="hover" title="移动到->">
+                                                    <div v-for="(item2, index) in category" :key="index">
+                                                        <div class="hov-cate"
+                                                            style="font-size: 16px; color: skyblue; cursor: pointer;"
+                                                            @click="moveCate(item2.categoryName, item2.categoryId, item.noteId)">
+                                                            <span>{{ item2.categoryName }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div slot="reference" class="el-icon-s-promotion" @click.stop="share()"
                                                         style="position: absolute; color: orange; right: 45px; top: 15px;">
                                                     </div>
                                                 </el-popover>
                                                 <el-popover placement="top" trigger="hover">
                                                     <el-button type="danger" size="mini" plain
-                                                        @click="deleNote(item.noteId)">删除</el-button> 
+                                                        @click="deleNote(item.noteId)">删除</el-button>
                                                     <div slot="reference" class="el-icon-more"
                                                         style="position: absolute; color: red; right: 15px; top: 15px;"
                                                         @click.stop="">
@@ -113,9 +127,10 @@
                                                 <div
                                                     style="position: relative; height: 20px; margin-top: 15px; margin-bottom: 5px;">
                                                     <div class="content-type">
-                                                        类别：<span style="background-color: #ffd698;" class="cus3">{{
-                                                            item.categoryName
-                                                        }}</span>
+                                                        类别：<span @click.stop="toCategory(item.categoryId)"
+                                                            style="background-color: #ffd698;" class="cus3">{{
+                                                                item.categoryName
+                                                            }}</span>
                                                     </div>
                                                     <div class="content-author-time">
                                                         <span>&emsp;更改于&nbsp;</span>
@@ -182,12 +197,15 @@ export default {
             asideKey: 1,   //侧边栏key初始值，用于重新加载
             userId: 0,
             noteVisi: false,
+            notification: '前往PC（电脑）端，体验完整功能，手机百度浏览器暂时有问题，请使用其他浏览器访问',
+            category: [],
         };
     },
     created() {
         this.start();
         this.userId = Cookies.get("userId");
         this.getArticleList();
+        this.loadCategory();
     },
     methods: {
         //分页触发动作
@@ -204,10 +222,25 @@ export default {
             //console.log(this.articleList)
             //console.log(res.number)
             this.articleCounts = res.number;
-            if(this.articleCounts === 0){
+            if (this.articleCounts === 0) {
                 this.noteVisi = true;
-            }else{
+            } else {
                 this.noteVisi = false;
+            }
+        },
+        //加载分类
+        async loadCategory() {
+            const { data: res } = await this.$http.get(`getCategory2?userId=${this.userId}`);
+            this.category = res.data;
+        },
+        //移动分类
+        async moveCate(cateName, categoryId, noteId) {
+            const { data: res } = await this.$http.delete(`updateArticleCate?cateName=${cateName}&categoryId=${categoryId}&noteId=${noteId}`);
+            if (res == "success") {
+                this.$message.success("移动成功！")
+                this.getArticleList();
+            } else {
+                this.$message.error("移动失败！")
             }
         },
         sakuraChange() {  //落樱效果切换
@@ -251,6 +284,10 @@ export default {
         toArticle(id) {
             this.$router.push({ path: '/notes?id=' + id });
         },
+        //分享
+        share() {
+            this.$message.warning("该功能尚未开放！");
+        },
         //删除一篇笔记
         deleNote(id) {
             this.$confirm('确定要删除该笔记吗?', '提示', {
@@ -270,6 +307,16 @@ export default {
             }).catch(() => {
                 // 用户点击了取消按钮，取消删除操作
             });
+        },
+        //去到分类
+        toCategory(id) {
+            const herf = window.location.href.split("/");
+            if (herf[herf.length - 1] == id) {
+                //location.reload();   //路由重复，刷新当前页
+            } else {
+                //console.log(id)
+                this.$router.push({ path: '/category/' + id });
+            }
         },
         //滚动条滚动
         scrollOneScreen() {
@@ -304,7 +351,7 @@ body {
 }
 
 .main-1 {
-    background-image: url(../assets/images/zhuti.jpg);
+    background-image: url(../assets/images/zhuti1.jpg);
     background-size: cover;
     color: #333;
     position: fixed;
@@ -331,6 +378,21 @@ body {
     z-index: -3;
 }
 
+.scrolling-container {
+    white-space: nowrap;
+    animation: scrollText 20s linear infinite;
+}
+
+@keyframes scrollText {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
 .recent-posts {
     width: 60%;
 }
@@ -354,7 +416,7 @@ body {
 
 // 水波纹实现
 .bannerWave1 {
-    margin-top: 89vh;
+    margin-top: 48vh;
     height: 85px;
     background: rgba(255, 255, 255, 0);
     width: 100%;
@@ -529,6 +591,10 @@ body {
     text-overflow: ellipsis;
 }
 
+.hov-cate:hover {
+    color: orange !important;
+}
+
 .el-icon-s-promotion:hover {
     color: skyblue !important;
 }
@@ -550,12 +616,14 @@ body {
 .content-type {
     position: absolute;
     font-size: 17px;
+    top: 5px;
 }
 
 .content-author-time {
     font-size: 14px !important;
     position: absolute;
     right: 0px;
+    top: 2px;
 }
 
 .content-time {
@@ -601,27 +669,40 @@ body {
 
 /* 手机端样式 */
 @media screen and (max-width: 767px) {
-  .aside-content {
-    display: none;
-  }
-  .page-container {
-    width: 100% !important;
-  }
-  .recent-posts{
-    width: 100% !important;
-  }
-  .wave-body, .wave-body2 {
-    width: 400% !important;
-  }
-  .logh1{
-    font-size: 27px !important;
-  }
-  .logot{
-    font-size: 14px !important;
-  }
-  .content-title{
-    max-width: 260px !important;
-  }
-}
+    .aside-content {
+        display: none !important;
+    }
 
-</style>
+    .page-container {
+        width: 100% !important;
+    }
+
+    .recent-posts {
+        width: 100% !important;
+    }
+
+    .wave-body,
+    .wave-body2 {
+        width: 400% !important;
+    }
+
+    .logh1 {
+        font-size: 27px !important;
+    }
+
+    .logot {
+        font-size: 14px !important;
+    }
+
+    .content-title {
+        max-width: 250px !important;
+    }
+
+    .el-message-box {
+        width: 320px !important;
+    }
+
+    .scrolling-container {
+        display: block !important;
+    }
+}</style>

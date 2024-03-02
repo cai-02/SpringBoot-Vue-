@@ -8,9 +8,9 @@
                 <h1 class="noteFont" style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
                     <span>{{ article.title }}</span>
                 </h1>
-                <h1 style="font-size: 20px; color: white; margin-top: 10px;">
+                <h1 class="noteFont2" style="font-size: 20px; color: white; margin-top: 10px;">
                     <span>{{ article.categoryName
-                    }}</span>&nbsp;<span>{{ this.articleMessage.time | dateFormat2 }}</span>
+                    }}</span>&nbsp;<span>{{ this.articleMessage.pubTime | dateFormat2 }}</span>
                 </h1>
             </div>
             <!-- 主内容部分 -->
@@ -333,7 +333,10 @@ export default Vue.extend({
 /* 手机端样式 */
 @media screen and (max-width: 767px) {
   .noteFont{
-    font-size: 22px !important;
+    font-size: 18px !important;
+  }
+  .noteFont2{
+    font-size: 18px !important;
   }
 
   .main-1 {
@@ -346,6 +349,9 @@ export default Vue.extend({
     z-index: 10 !important;
   }
   .wangEdi{
+    display: none !important;
+  }
+  .aside-content {
     display: none !important;
   }
   .qinkong{

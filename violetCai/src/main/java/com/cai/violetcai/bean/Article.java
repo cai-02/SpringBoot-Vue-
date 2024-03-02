@@ -18,5 +18,7 @@ public class Article {
     private int categoryId;
     private String categoryName;
     private int userId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime pubTime;
 
 }

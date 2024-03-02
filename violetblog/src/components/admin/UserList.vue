@@ -2,7 +2,7 @@
     <div>
         <!-- 面包屑导航 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/message' }">我的后台</el-breadcrumb-item>
             <el-breadcrumb-item>数据管理</el-breadcrumb-item>
             <el-breadcrumb-item>用户列表</el-breadcrumb-item>
         </el-breadcrumb>
@@ -22,20 +22,11 @@
             </el-row>
 
             <!-- 用户列表部分 stripe 隔行变色-->
-            <el-table :data="userList" :row-style="{ height: '60px' }" height="473px" border stripe>
+            <el-table :data="userList" :row-style="{ height: '60px' }" height="473px" stripe>
                 <el-table-column type="index"></el-table-column> <!-- 索引列 -->
                 <el-table-column label="用户名" prop="username"></el-table-column>
                 <el-table-column label="邮箱" prop="email"></el-table-column>
                 <el-table-column label="角色" prop="role"></el-table-column>
-                <!-- <el-table-column label="性别" width="100px" prop="gender"></el-table-column>
-                <el-table-column label="简介"> -->
-                    <!-- 添加样式类名以限制行高和文本截断 -->
-                    <!-- <template slot-scope="scope">
-                        <div class="table-cell">
-                            {{ scope.row.introduction }}
-                        </div>
-                    </template>
-                </el-table-column> -->
                 <el-table-column label="状态" width="120px" prop="state">
                     <!-- 作用域插槽 -->
                     <template slot-scope="scope">
@@ -45,7 +36,8 @@
                 </el-table-column>
                 <el-table-column label="头像" width="100px">
                     <template slot-scope="scope">
-                        <img style="cursor: pointer;" class="zoom-effect" :src="scope.row.headimage" width="100%" height="100%">
+                        <img style="cursor: pointer;" class="zoom-effect" :src="scope.row.headimage" width="100%"
+                            height="100%">
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="200px">
@@ -53,12 +45,12 @@
                         <!-- 修改 -->
                         <el-tooltip type="dark" content="修改信息" placement="top-start" :enterable="false">
                             <el-button type="primary" icon="el-icon-edit" size="mini"
-                                @click="showEditDialog(scope.row.id)"></el-button>
+                                @click="showEditDialog(scope.row.userId)"></el-button>
                         </el-tooltip>
                         <!-- 删除 -->
                         <el-tooltip type="dark" content="删除" placement="top-start" :enterable="false">
                             <el-button type="danger" icon="el-icon-delete" size="mini"
-                                @click="deleteUser(scope.row.id)"></el-button>
+                                @click="deleteUser(scope.row.userId)"></el-button>
                         </el-tooltip>
                         <!-- 权限 -->
                         <el-tooltip type="dark" content="分配权限" placement="top-start" :enterable="false">
@@ -78,15 +70,23 @@
         </el-card>
         <!-- 新增用户区域 -->
         <el-dialog title="添加用户" :visible.sync="addDialogVisible" wdith="50%" @close="addDialogClosed">
-            <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
+            <el-form :model="registForm" :rules="addFormRules" ref="addFormRef" label-width="100px">
+                <!-- 用户名 -->
                 <el-form-item label="用户名" prop="username">
-                    <el-input v-model="addForm.username"></el-input>
+                    <el-input placeholder="请输入用户名" v-model="registForm.username" prefix-icon="el-icon-user"></el-input>
                 </el-form-item>
+                <!-- 密码 -->
                 <el-form-item label="密码" prop="password">
-                    <el-input v-model="addForm.password"></el-input>
+                    <el-input placeholder="请输入密码" v-model="registForm.password" prefix-icon="el-icon-lock"
+                        type="password"></el-input>
                 </el-form-item>
+                <el-form-item label="确认密码" prop="checkPassword">
+                    <el-input placeholder="请确认密码" v-model="registForm.checkPassword" prefix-icon="el-icon-lock"
+                        type="password"></el-input>
+                </el-form-item>
+                <!-- 邮箱 -->
                 <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="addForm.email"></el-input>
+                    <el-input placeholder="请输入邮箱" v-model="registForm.email" prefix-icon="el-icon-message"></el-input>
                 </el-form-item>
             </el-form>
             <!-- 内容底部区域 -->
@@ -104,15 +104,6 @@
                 <el-form-item label="邮箱" prop="email">
                     <el-input v-model="editForm.email"></el-input>
                 </el-form-item>
-                <el-form-item label="性  别">
-                    <el-radio-group v-model="editForm.gender">
-                        <el-radio value="男" label="男"></el-radio>
-                        <el-radio value="女" label="女"></el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="简  介" prop="introduction">
-                    <el-input type="textarea" v-model="editForm.introduction"></el-input>
-                </el-form-item>
             </el-form>
             <!-- 内容底部区域 -->
             <span slot="footer" class="dialog-footer">
@@ -129,6 +120,15 @@ export default {
         this.getUserList();
     },
     data() {
+        var validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.registForm.password) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        };
         return {
             //查询信息封装的实体
             queryInfo: {
@@ -140,10 +140,11 @@ export default {
             total: 0,     //总记录数
             addDialogVisible: false,     //对话框状态
             //添加表单信息
-            addForm: {
-                username: '',
-                password: '',
-                email: ''
+            registForm: {
+                username: "",
+                password: "",
+                checkPassword: "",
+                email: "",
             },
             //修改用户信息
             editForm: {},
@@ -151,18 +152,23 @@ export default {
             editDialogVisible: false,
             //添加表单验证
             addFormRules: {
+                //校验用户名
                 username: [
-                    { required: true, message: '请输入用户名', trigger: 'blur' },
-                    { min: 5, max: 12, message: '长度在 5 到 12 个字符', trigger: 'blur' }
+                    { required: true, message: '用户名为必填项', trigger: 'blur' },  //必填项验证
+                    { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }  //长度验证
                 ],
+                //校验密码
                 password: [
-                    { required: true, message: '请输入密码', trigger: 'blur' },
-                    { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+                    { required: true, message: '用户密码为必填项', trigger: 'blur' },  //必填项验证
+                    { min: 6, max: 12, message: '长度在 6 ~ 12 个字符', trigger: 'blur' },  //长度验证
+                ],
+                //校验确认密码
+                checkPassword: [
+                    { required: true, validator: validatePass2, trigger: 'blur' }
                 ],
                 email: [
-                    { required: true, message: '请输入邮箱', trigger: 'blur' },
-                    { min: 5, max: 16, message: '请输入正确邮箱地址', trigger: 'blur' }
-                ]
+                    { required: true, message: '邮箱为必填项', trigger: 'blur' },  //必填项验证
+                ],
             },
             //修改表单验证
             editFormRules: {
@@ -192,7 +198,7 @@ export default {
         },
         //修改用户状态
         async userStateChanged(userInfo) {
-            const { data: res } = await this.$http.put(`userstate?id=${userInfo.id}&state=${userInfo.state}`);
+            const { data: res } = await this.$http.put(`userstate?id=${userInfo.userId}&state=${userInfo.state}`);
             if (res != "success") {
                 userInfo.id = !userInfo.id;
                 return this.$message.error("操作失败！");
@@ -204,16 +210,24 @@ export default {
             this.$refs.addFormRef.resetFields();
         },
         async addUser() {
+            //验证校验规则
             this.$refs.addFormRef.validate(async valid => {
-                if (!valid) return;
-                const { data: res } = await this.$http.post("adduser", this.addForm);
-                if (res != "success") {
-                    return this.$message.error("操作失败！");
+                if (!valid) return;   //校验失败，验证用户名和密码合法性
+                //检测用户名唯一性
+                const { data: res } = await this.$http.get(`uniqueUser?username=${this.registForm.username}`);
+                if (res != true) {
+                    return this.$message.error("用户名已存在！");
+                } else {
+                    const { data: res } = await this.$http.post("adduser", this.registForm);
+                    if (res != "success") {
+                        return this.$message.error("注册失败！");
+                    }
+                    this.$message.success("注册成功！");
+                    this.$refs.addFormRef.resetFields();  //清空表单
+                    this.addDialogVisible = false;     //关闭对话框
+                    this.getUserList();     //刷新数据
                 }
-                this.$message.success("操作成功！");
-                this.addDialogVisible = false;
-                this.getUserList();
-            });
+            })
         },
         //根据主建删除用户
         async deleteUser(id) {
@@ -266,12 +280,18 @@ export default {
 }
 
 .table-cell {
-    max-height: 3.6em; /* 2行文本的高度，每行大约1.8em */
+    max-height: 3.6em;
+    /* 2行文本的高度，每行大约1.8em */
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal; /* 允许文字换行 */
+    white-space: normal;
+    /* 允许文字换行 */
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 限制文本显示的行数 */
+    -webkit-line-clamp: 2;
+    /* 限制文本显示的行数 */
     -webkit-box-orient: vertical;
+}
+/deep/ .el-table__body-wrapper{
+    overflow-y: auto;
 }
 </style>

@@ -47,7 +47,7 @@ body,
 
 /* 滚动条整体 */
 body::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 /* .el-main::-webkit-scrollbar {
     width: 10px;
@@ -79,7 +79,7 @@ body::-webkit-scrollbar-track {
 
 /* 表格滚动条整体 */
 .el-table__body-wrapper::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 /* 滚动条滑块  */

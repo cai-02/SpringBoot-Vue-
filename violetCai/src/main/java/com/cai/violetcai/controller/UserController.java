@@ -3,6 +3,7 @@ package com.cai.violetcai.controller;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.cai.violetcai.bean.Article;
 import com.cai.violetcai.bean.Category;
 import com.cai.violetcai.bean.QueryInfo;
 import com.cai.violetcai.bean.User;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -67,6 +69,19 @@ public class UserController {
             category.setUserId(userId);
             category.setCategoryName("默认");
             categoryDao.addCategory(category);
+            //创建默认笔记
+            Article article = new Article();
+            article.setTitle("而你，我的朋友，你才是真正的英雄！");
+            article.setAuthor(user.getUsername());
+            article.setContent("<p><img src=\"http://localhost:9000//files/head/noteDafultImg.jpg\" alt=\"\" data-href=\"\" style=\"width: 100.00px;height: 100.39px;\"/></p>");
+            //article.setContent("<p><img src=\"http://47.108.66.150:9000//files/head/noteDafultImg.jpg\" alt=\"\" data-href=\"\" style=\"width: 100.00px;height: 100.39px;\"/></p>");
+            article.setTime(LocalDateTime.now());
+            int id = userDao.getUserIdByName(user.getUsername()); //获取用户id
+            int cateId = categoryDao.getCategoryId(id, "默认");
+            article.setCategoryId(cateId);
+            article.setCategoryName("默认");
+            article.setUserId(id);
+            articleDao.addArticle(article);
             return "success";
         }else {
             return "error";
@@ -108,7 +123,6 @@ public class UserController {
                     Path filePath = Paths.get(basePath, fileName);
                     Files.delete(filePath);
                 }
-
                 //获取新头像
                 int i = userDao.changeImage(img, id);
                 return i > 0 ? "success":"error";

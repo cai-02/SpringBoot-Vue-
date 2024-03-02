@@ -4,15 +4,15 @@
         <p-header></p-header>
         <!-- 内容 -->
         <el-main>
-            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(${randomBackground})` }">
-                <h1 style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
+            <div class="main-1 main-1-c" ref="targetDiv" :style="{ backgroundImage: `url(${randomBackground})` }">
+                <h1 class="cateFont" style="font-size: 35px; color: #39c5bb; margin-top: 58px; margin-bottom: 0;">
                     <span>{{ this.categoryName }} -> {{ this.noteCounts }}篇</span>
                 </h1>
             </div>
             <!-- 主内容部分 -->
             <div class="main-2" style="text-align: center;">
                 <div class="page-container">
-                    <i-aside></i-aside>
+                    <i-aside :key="asideKey"></i-aside>
                     <!-- 文章内容部分 -->
                     <div class="recent-posts">
                         <div class="el-card-two noteA" @click="xin()" style="padding: 22px; height: 55px; width: auto; margin-top: 40px; background: white; display: flex; margin-bottom: 18px;
@@ -40,17 +40,16 @@
                                                     <span class="cus2">{{ item.title }}</span>
                                                 </div>
                                                 <el-popover placement="top" trigger="hover" content="分享">
-                                                    <div slot="reference" class="el-icon-s-promotion"
+                                                    <div slot="reference" class="el-icon-s-promotion" @click.stop="share()"
                                                         style="position: absolute; color: orange; right: 45px; top: 15px;">
                                                     </div>
                                                 </el-popover>
                                                 <el-popover placement="top" trigger="hover">
                                                     <el-button type="danger" size="mini" plain
-                                                        @click="">删除</el-button><br />
-                                                    <el-button type="warning" size="mini" plain @click=""
-                                                        style="margin-top: 6px;">多选</el-button>
+                                                        @click="deleNote(item.noteId)">删除</el-button>
                                                     <div slot="reference" class="el-icon-more"
-                                                        style="position: absolute; color: red; right: 15px; top: 15px;">
+                                                        style="position: absolute; color: red; right: 15px; top: 15px;"
+                                                        @click.stop="">
                                                     </div>
                                                 </el-popover>
                                                 <div class="content-introduce">
@@ -124,6 +123,7 @@ export default Vue.extend({
             noteCounts: 0,     //笔记数量
             isBackground: true,
             randomBackground: '',   //随机背景
+            asideKey: 1,   //侧边栏key初始值，用于重新加载
         };
     },
     created() {
@@ -165,6 +165,30 @@ export default Vue.extend({
         //去到文章
         toArticle(id) {
             this.$router.push({ path: '/notes?id=' + id });
+        },
+        //分享
+        share() {
+            this.$message.warning("该功能尚未开放！");
+        },
+        //删除一篇笔记
+        deleNote(id) {
+            this.$confirm('确定要删除该笔记吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(async () => {
+                const { data: res } = await this.$http.delete(`deleteArticle?noteId=${id}`)    //访问后台
+                if (res == "success") {
+                    this.$message.success("删除成功！")
+                    this.getNotes();
+                    // 修改 key 值，触发组件重新加载
+                    this.asideKey += 1;
+                } else {
+                    this.$message.error("删除失败！")
+                }
+            }).catch(() => {
+                // 用户点击了取消按钮，取消删除操作
+            });
         },
         //滚动条滚动
         scrollOneScreen() {
@@ -365,5 +389,16 @@ export default Vue.extend({
     /*对上一页的按钮样式进行修改*/
     background-color: #ffffff !important;
     color: #000000 !important;
+}
+
+/* 手机端样式 */
+@media screen and (max-width: 767px) {
+    .main-1-c {
+        height: 180px !important;
+    }
+
+    .cateFont {
+        font-size: 20px !important;
+    }
 }
 </style>
