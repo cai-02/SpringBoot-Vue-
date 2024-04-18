@@ -15,18 +15,25 @@ public interface ArticleDao {
     public List<Article> getAllArticleByUserId(@Param("userId") int userId, @Param("title") String title, @Param("pageStart") int pageStart, @Param("pageSize") int pageSize);
     //用户个人笔记信息（分页，根据用户名和类别）
     public List<Article> getAllArticleByUserIdCate(@Param("userId") int userId, @Param("categoryId") int categoryId, @Param("title") String title, @Param("pageStart") int pageStart, @Param("pageSize") int pageSize);
+    //查询所有已公开笔记
+    public List<Article> getAllArticleByOpen(@Param("title") String title, @Param("pageStart") int pageStart, @Param("pageSize") int pageSize);
+    //查询谋用户已公开笔记
+    public List<Article> getAllArticleByOpenUserId(@Param("userId") int userId, @Param("title") String title, @Param("pageStart") int pageStart, @Param("pageSize") int pageSize);
     //查询最近更改的五篇笔记
     public List<Article> getArticleByTime(@Param("userId") int userId);
     //笔记总数
     public int getArticleCounts(@Param("userId") int userId);
     public int getArticleCountsByCate(@Param("userId") int userId, @Param("categoryId") int categoryId);
     public int getArticleCounts2(@Param("articlename") String username);
+    public int getArticleCountsByOpen();
+    public int getArticleCountsByOpenUserId(int userId);
     //笔记添加
     public int addArticle(Article notes);
     //根据id查询笔记
     public Article getArticleMessage(int id);
     //笔记更新
     public int updateArticle(Article notes);
+    public int updateArticleOpen(boolean open, int noteId);
     public int updateArticleAuthorById(@Param("username") String author, @Param("userId") int userId);
     public int updateArticleCate(@Param("cateName") String cateName, @Param("categoryId") int categoryId, @Param("noteId") int noteId);
     //笔记删除

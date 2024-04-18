@@ -69,12 +69,11 @@
             </div>
             <!-- 主内容部分 -->
             <div class="main-2" ref="targetDiv">
-
                 <div class="page-container">
                     <!-- 左侧侧边栏引用 -->
-                    <i-aside :key="asideKey"></i-aside>
+                    <i-aside v-if="showSidebar" :key="asideKey"></i-aside>
                     <!-- 文章内容部分 -->
-                    <div class="recent-posts">
+                    <div class="recent-posts" :style="{ width: jianWidth }">
                         <div class="el-card-two noteA" @click="xin()" style="padding: 22px; height: 55px; width: auto; margin-top: 40px; background: white; display: flex; margin-bottom: 18px;
                             flex-direction: column; justify-content: center; padding: 16px;">
                             <!-- class="el-icon-orange" -->
@@ -91,7 +90,8 @@
                                 style="border-bottom: 1px dashed rgb(168, 164, 164); padding-bottom: 8px; margin-bottom: 23px;">
                             </div>
                             <!-- 笔记存放区 -->
-                            <div v-if="noteVisi" style="margin-bottom: 30px; font-size: 25px; color: #ff7e94;">暂无笔记，快新建一篇吧！
+                            <div v-if="noteVisi" style="margin-bottom: 30px; font-size: 25px; color: #ff7e94;">
+                                暂无笔记，快新建一篇吧！
                             </div>
                             <div v-for="(item, index) in articleList" :key="index">
                                 <el-card class="article-cover el-card-two" body-style="padding: 0">
@@ -109,11 +109,14 @@
                                                             <span>{{ item2.categoryName }}</span>
                                                         </div>
                                                     </div>
-                                                    <div slot="reference" class="el-icon-s-promotion" @click.stop="share()"
+                                                    <div slot="reference" class="el-icon-s-promotion" @click.stop=""
                                                         style="position: absolute; color: orange; right: 45px; top: 15px;">
                                                     </div>
                                                 </el-popover>
                                                 <el-popover placement="top" trigger="hover">
+                                                    <el-button type="warning" size="mini" plain
+                                                        style="margin-bottom: 8px;" @click="openNote(item.open, item.noteId)"
+                                                        v-text="item.open? '恢复':'公开'"></el-button><br />
                                                     <el-button type="danger" size="mini" plain
                                                         @click="deleNote(item.noteId)">删除</el-button>
                                                     <div slot="reference" class="el-icon-more"
@@ -128,9 +131,7 @@
                                                     style="position: relative; height: 20px; margin-top: 15px; margin-bottom: 5px;">
                                                     <div class="content-type">
                                                         类别：<span @click.stop="toCategory(item.categoryId)"
-                                                            style="background-color: #ffd698;" class="cus3">{{
-                                                                item.categoryName
-                                                            }}</span>
+                                                            style="background-color: #ffd698;" class="cus3">{{ item.categoryName }}</span>
                                                     </div>
                                                     <div class="content-author-time">
                                                         <span>&emsp;更改于&nbsp;</span>
@@ -146,8 +147,8 @@
                         <!-- 分页区 -->
                         <div style="margin-top: -10px;">
                             <el-pagination class="msg-pagination-container" :background="isBackground" :pager-count=7
-                                @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="artPageSize"
-                                :total="articleCounts">
+                                @current-change="handleCurrentChange" layout="prev, pager, next"
+                                :page-size="artPageSize" :total="articleCounts">
                             </el-pagination>
                         </div>
                     </div>
@@ -156,14 +157,28 @@
             <!-- 底部 -->
             <el-footer>Copyright © 2023 <span>violet蔡</span> All rights reserved</el-footer>
         </el-main>
-        <div style="position: fixed; bottom: 70px; right: 14px;" @click="intop" text="向上">
+        <div style="position: fixed; bottom: 65px; right: 14px;" @click="intop" text="向上">
             <i class="el-icon-top intop" style="font-size: 40px; color: #4fc5f6; font-weight: bold;"></i>
         </div>
-        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
-            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
-                <use xlink:href="#icon-shezhitianchong"></use>
-            </svg>
-        </div>
+        <el-popover placement="left" trigger="hover">
+            <el-popover placement="top" trigger="hover">
+                <div>樱花漫天</div>
+                <el-button slot="reference" type="primary" size="mini" plain @click="sakuraChange">
+                    <div class="el-icon-magic-stick" style="font-size: 15px; color: red;"></div>
+                </el-button>
+            </el-popover><br />
+            <el-popover placement="left" trigger="hover">
+                <div>简洁模式</div>
+                <el-button slot="reference" style="margin-top: 8px;" type="primary" size="mini" plain
+                    @click="changeJ()">
+                    <div class="el-icon-refresh" style="font-size: 15px; color: red;"></div>
+                </el-button>
+            </el-popover><br />
+            <div slot="reference" class="el-icon-s-tools settings"
+                style="position: fixed; font-size: 35px; color: rgb(83 181 230); bottom: 20px; right: 15.5px;"
+                text="设置">
+            </div>
+        </el-popover>
     </el-container>
 </template>
 
@@ -199,6 +214,8 @@ export default {
             noteVisi: false,
             notification: '前往PC（电脑）端，体验完整功能，手机百度浏览器暂时有问题，请使用其他浏览器访问',
             category: [],
+            showSidebar: JSON.parse(sessionStorage.getItem('leftVisi')) !== false, // 从 sessionStorage 中获取状态，默认为 true
+            jianWidth: sessionStorage.getItem("jianWidth"),
         };
     },
     created() {
@@ -235,12 +252,24 @@ export default {
         },
         //移动分类
         async moveCate(cateName, categoryId, noteId) {
-            const { data: res } = await this.$http.delete(`updateArticleCate?cateName=${cateName}&categoryId=${categoryId}&noteId=${noteId}`);
+            const { data: res } = await this.$http.put(`updateArticleCate?cateName=${cateName}&categoryId=${categoryId}&noteId=${noteId}`);
             if (res == "success") {
                 this.$message.success("移动成功！")
                 this.getArticleList();
             } else {
                 this.$message.error("移动失败！")
+            }
+        },
+        //简洁模式切换
+        changeJ() {
+            this.showSidebar = !this.showSidebar; // 切换状态
+            sessionStorage.setItem('leftVisi', this.showSidebar); // 存储状态到 sessionStorage
+            if (this.showSidebar !== true) {
+                this.jianWidth = "75%";
+                sessionStorage.setItem('jianWidth', "75%");
+            } else {
+                this.jianWidth = "60%";
+                sessionStorage.setItem('jianWidth', "60%");
             }
         },
         sakuraChange() {  //落樱效果切换
@@ -284,9 +313,42 @@ export default {
         toArticle(id) {
             this.$router.push({ path: '/notes?id=' + id });
         },
-        //分享
-        share() {
-            this.$message.warning("该功能尚未开放！");
+        //公开笔记
+        async openNote(opentext, id) {
+            if (opentext === false) {
+                this.$confirm('确定要将该笔记公开到广场吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    const { data: res } = await this.$http.put(`updateArticleOpen?open=${"true"}&noteId=${id}`);
+                    if (res == "success") {
+                        this.$message.success("笔记已公开！")
+                        this.getArticleList();
+                    } else {
+                        this.$message.error("失败！")
+                    }
+                }).catch(() => {
+                    // 用户点击了取消按钮，取消删除操作
+                });
+            } else {
+                const { data: res } = await this.$http.put(`updateArticleOpen?open=${"false"}&noteId=${id}`);
+                if (res == "success") {
+                    this.$message.success("笔记已恢复！")
+                    this.getArticleList();
+                } else {
+                    this.$message.error("失败！")
+                }
+            }
+            // const { data: res } = await this.$http.delete(`deleteArticle?noteId=${id}`)    //访问后台
+            // if (res == "success") {
+
+            //     this.getArticleList();
+            //     // 修改 key 值，触发组件重新加载
+            //     this.asideKey += 1;
+            // } else {
+            //     this.$message.error("删除失败！")
+            // }
         },
         //删除一篇笔记
         deleNote(id) {
@@ -393,10 +455,6 @@ body {
     }
 }
 
-.recent-posts {
-    width: 60%;
-}
-
 .noteA {
     cursor: pointer;
 }
@@ -450,6 +508,10 @@ body {
     height: 130px;
     width: 5%;
     background-size: 100% 100%;
+}
+
+.recent-posts {
+    width: 60%;
 }
 
 .waves2 {
@@ -705,4 +767,5 @@ body {
     .scrolling-container {
         display: block !important;
     }
-}</style>
+}
+</style>

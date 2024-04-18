@@ -184,6 +184,7 @@ export default {
                                 return this.$message.error("修改失败！");
                             }
                             this.$message.success("修改成功！");
+                            this.originalName = this.form.username;
                             //重新设置cookie
                             const { data: res2 } = await this.$http.put(`getupdate?id=${this.userId}`);
                             Cookies.set("user", JSON.stringify(res2), { expires: 7 });
@@ -232,6 +233,7 @@ export default {
                             return this.$message.error("修改失败！");
                         }
                         this.$message.success("修改成功！");
+                        this.originalName = this.form.username;
                         //重新设置cookie
                         const { data: res2 } = await this.$http.put(`getupdate?id=${this.userId}`);
                         Cookies.set("user", JSON.stringify(res2), { expires: 7 });

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +24,15 @@ import java.util.List;
 public class FileController {
     @Value("${server.port}")
     private String port;
+    @Value("${service.address}")
+    private String address;
 
-    private static final String ip = "http://localhost";
-    //private static final String ip = "http://47.108.66.150";
+    private String ip;
+    @PostConstruct
+    private void initialize() {
+        // 在这里进行赋值，确保在Bean初始化完成后执行
+        this.ip = "http://" + address;
+    }
 
     /**
      * 上传接口
@@ -33,13 +40,15 @@ public class FileController {
      * @return
      * @throws IOException
      */
+    @Value("${service.headAdd}")
+    private String headAdd;
     @PostMapping("/upload")  //头像上传
     public String upload(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();  //获取源文件名称
         //定义文件的唯一标识
         String flag = IdUtil.fastSimpleUUID();
-        String rootFilePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/" + flag + "_" + originalFilename;  //获取上传路径
-        //String rootFilePath = System.getProperty("user.dir") + "/headImage/" + flag + "_" + originalFilename;  //获取上传路径
+        //String rootFilePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/" + flag + "_" + originalFilename;  //获取上传路径
+        String rootFilePath = System.getProperty("user.dir") + headAdd + flag + "_" + originalFilename;  //获取上传路径
         //把文件写入到上传的路径
         FileUtil.writeBytes(file.getBytes(), rootFilePath);
         return ip + ":" + port + "/files/head/" + flag;
@@ -52,8 +61,8 @@ public class FileController {
     @GetMapping("/head/{flag}")  //头像下载
     public void getFile(@PathVariable String flag, HttpServletResponse response){
         OutputStream os;   //新建一个输出流对象
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/";
-        //String basePath = System.getProperty("user.dir") + "/headImage";
+        //String basePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/";
+        String basePath = System.getProperty("user.dir") + headAdd;
         List<String> fileNames = FileUtil.listFileNames(basePath);   //获取所有文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(flag)).findAny().orElse("");  //找到跟参数一致的文件
         try{
@@ -71,6 +80,8 @@ public class FileController {
         }
     }
 
+    @Value("${service.albumAdd}")
+    private String albumAdd;
     @PostMapping("/uploadAlbum")  //相册上传
     public List<String> upload2(MultipartFile[] file) throws IOException {
         List<String> downloadUrls = new ArrayList<>();
@@ -79,10 +90,11 @@ public class FileController {
             String originalFilename = files.getOriginalFilename();  //获取源文件名称
             //定义文件的唯一标识
             String flag = IdUtil.fastSimpleUUID();
-            String rootFilePath = System.getProperty("user.dir") + "/src/main/resources/images/albumImage/" + flag + "_" + originalFilename;  //获取上传路径
-            //String rootFilePath = System.getProperty("user.dir") + "/albumImage/" + flag + "_" + originalFilename;  //获取上传路径
+            //String rootFilePath = System.getProperty("user.dir") + "/src/main/resources/images/albumImage/" + flag + "_" + originalFilename;  //获取上传路径
+            String rootFilePath = System.getProperty("user.dir") + albumAdd + flag + "_" + originalFilename;  //获取上传路径
             //把文件写入到上传的路径
             FileUtil.writeBytes(files.getBytes(), rootFilePath);
+            //System.out.println(port + "  " + address + "  " + ip);
             downloadUrls.add(ip + ":" + port + "/files/getAlbum/" + flag);
         }
         return downloadUrls;
@@ -90,8 +102,8 @@ public class FileController {
     @GetMapping("/getAlbum/{flag}")  //相册下载
     public void getFile2(@PathVariable String flag, HttpServletResponse response){
         OutputStream os;   //新建一个输出流对象
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/images/albumImage/";
-        //String basePath = System.getProperty("user.dir") + "/albumImage";
+        //String basePath = System.getProperty("user.dir") + "/src/main/resources/images/albumImage/";
+        String basePath = System.getProperty("user.dir") + albumAdd;
         List<String> fileNames = FileUtil.listFileNames(basePath);   //获取所有文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(flag)).findAny().orElse("");  //找到跟参数一致的文件
         try{
@@ -109,6 +121,8 @@ public class FileController {
         }
     }
 
+    @Value("${service.fileAdd}")
+    private String fileAdd;
     @PostMapping("/uploadFiles")  //文件上传
     public String upload3(MultipartFile[] file) throws IOException {
         List<String> downloadUrls = new ArrayList<>();
@@ -119,8 +133,8 @@ public class FileController {
             String originalFilename = files.getOriginalFilename();  //获取源文件名称
             //定义文件的唯一标识
             String flag = IdUtil.fastSimpleUUID();
-            String rootFilePath = System.getProperty("user.dir") + "/src/main/resources/files/" + flag + "_" + originalFilename;  //获取上传路径
-            //String rootFilePath = System.getProperty("user.dir") + "/albumImage/" + flag + "_" + originalFilename;  //获取上传路径
+            //String rootFilePath = System.getProperty("user.dir") + "/src/main/resources/files/" + flag + "_" + originalFilename;  //获取上传路径
+            String rootFilePath = System.getProperty("user.dir") + fileAdd + flag + "_" + originalFilename;  //获取上传路径
             //把文件写入到上传的路径
             FileUtil.writeBytes(files.getBytes(), rootFilePath);
             downloadUrls.add(ip + ":" + port + "/files/getFiles/" + flag);
@@ -143,8 +157,8 @@ public class FileController {
     @GetMapping("/getFiles/{flag}")  //文件下载
     public void getFile3(@PathVariable String flag, HttpServletResponse response){
         OutputStream os;   //新建一个输出流对象
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
-        //String basePath = System.getProperty("user.dir") + "/albumImage";
+        //String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
+        String basePath = System.getProperty("user.dir") + fileAdd;
         List<String> fileNames = FileUtil.listFileNames(basePath);   //获取所有文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(flag)).findAny().orElse("");  //找到跟参数一致的文件
         try{

@@ -7,6 +7,7 @@ import com.cai.violetcai.bean.Files;
 import com.cai.violetcai.bean.Pictur;
 import com.cai.violetcai.dao.FilesDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +27,7 @@ public class FilesController {
     @Autowired
     FilesDao filesDao;
 
+    //获取文件信息
     @RequestMapping("/getFiles")
     public String getFiles(@RequestParam("userId") int id, @RequestParam("fileName") String fileName){
         List<Files> filesList = filesDao.getAllFilesById(id, "%" + fileName + "%");
@@ -36,6 +38,7 @@ public class FilesController {
         return resJson;
     }
 
+    //文件信息添加数据库
     @RequestMapping("/addFiles")
     public List<String> addFile(@RequestBody Files files){
         files.setFileTime(LocalDateTime.now());
@@ -52,14 +55,23 @@ public class FilesController {
         return filesUrl;
     }
 
+    //文件总数
+    @RequestMapping("/getFileCounts")
+    public int getFileCounts(int userId){
+        int counts = filesDao.getFilesCounts(userId);
+        return counts;
+    }
+
+    @Value("${service.fileAdd}")
+    private String fileAdd;
     //删除图片
     @RequestMapping("/deleteFile")
     public String deletePictur(@RequestParam("fileUrl") String fileUrl){
         // 获取路径的最后一部分
         String[] segments2 = fileUrl.split("/");
         String lastSegment = segments2[segments2.length - 1];
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
-        //String basePath = System.getProperty("user.dir") + "/files/";
+        //String basePath = System.getProperty("user.dir") + "/src/main/resources/files/";
+        String basePath = System.getProperty("user.dir") + fileAdd;
         List<String> fileNames = FileUtil.listFileNames(basePath);   // 获取所有文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(lastSegment)).findAny().orElse("");
         if (StrUtil.isNotEmpty(fileName)) {

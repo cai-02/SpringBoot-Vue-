@@ -9,7 +9,7 @@
             <!-- 主内容部分 -->
             <div class="main-2">
                 <div class="page-title" style="text-align: center; margin-bottom: 10px;">
-                    <div class="cateFont" style="font-size: 40px; font-weight: bold; color: rgb(255, 209, 125);">
+                    <div class="cateFont" style="font-size: 40px; font-weight: bold; color: rgb(244 244 244);">
                         <span>类别</span>
                     </div>
                 </div>
@@ -69,7 +69,6 @@
 </template>
   
 <script>
-import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Header from '../components/header.vue'
 import Vue from 'vue'
 import Cookies from 'js-cookie'
@@ -187,13 +186,6 @@ export default Vue.extend({
         },
         handleCheckboxChange() {
             //console.log(JSON.stringify(this.checkedItems))
-        },
-        sakuraChange() {  //落樱效果切换
-            if (staticx) {
-                stopp();
-            } else {
-                startSakura();
-            }
         },
     },
     mounted() {

@@ -109,6 +109,10 @@ body::-webkit-scrollbar-track {
 .settings{
     animation: rot 2s infinite linear;
 }
+.settings:hover{
+    color: orange !important;
+    cursor: pointer;
+}
 
 /* 全局字体 */
 .font-style{
@@ -237,6 +241,32 @@ body::-webkit-scrollbar-track {
   
 .zoom-effect:hover {
 transform: scale(1.12);
+}
+
+/* 留言样式 */
+.move-item {
+    max-width: 600px; 
+    width: max-content; 
+    height: 35px; 
+    background: rgba(0, 0, 0, 0.45); 
+    padding-right: 13px; 
+    border-radius: 50px;
+    display: inline-block;
+    margin-right: 20px;
+}
+.headImage {
+    border-radius: 50%; 
+    float: left;
+}
+.move-text {
+    color: white; 
+    max-width: 540px; 
+    height: 35px; 
+    float: left; 
+    font-size: 19px; 
+    line-height: 35px; 
+    margin-left: 6px; 
+    overflow: hidden;
 }
 
 /* 回到顶部样式 */

@@ -21,11 +21,15 @@ public interface UserDao {
     public int editUser(User user);
     //用户名获取用户id
     public int getUserIdByName(@Param("username") String username);
+    //查询用户
+    public List<User> getUserByName(@Param("username") String username);
     //修改头像方法
     public int changeImage(@Param("headImg") String headImg, @Param("userId") int id);
     //用户唯一性检测
     public User getUserByUsername(@Param("username") String username);
     //查看权限
     public String getRole(int userId);
+    //获取时间
+    public String getAddTime(int userId);
 
 }

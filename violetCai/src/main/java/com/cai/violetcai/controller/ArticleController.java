@@ -50,6 +50,7 @@ public class ArticleController {
 
         List<Article> articles = articleDao.getAllArticleByUserId(userId, "%" + title + "%", pageStart, pageSize);
         HashMap<String, Object> res = new HashMap<>();
+        //System.out.println("articles: ");
         res.put("number", numbers);
         res.put("data", articles);
         //System.out.println(userId + " " + title + " " + pageStart + " " + pageSize + "  //" + articles);
@@ -77,6 +78,7 @@ public class ArticleController {
         notes.setPubTime(LocalDateTime.now());
         int categoryId = categoryDao.getCategoryId(notes.getUserId(), notes.getCategoryName());
         notes.setCategoryId(categoryId);
+        notes.setOpen(false);
         int i = articleDao.addArticle(notes);
         return i > 0 ? "success":"error";
     }
@@ -113,6 +115,43 @@ public class ArticleController {
     public String updateArticleCate(@RequestParam("cateName") String cateName, @RequestParam("categoryId") int categoryId, @RequestParam("noteId") int noteId){
         int i = articleDao.updateArticleCate(cateName, categoryId, noteId);
         return i > 0 ? "success":"error";
+    }
+
+    //更新笔记公开状态
+    @RequestMapping("/updateArticleOpen")
+    public String updateArticleOpen(@RequestParam("open") boolean open, @RequestParam("noteId") int noteId){
+        int i = articleDao.updateArticleOpen(open, noteId);
+        return i > 0 ? "success":"error";
+    }
+
+    //获取所有已公开笔记
+    @RequestMapping("/getArticleOpen")
+    public String getArticleOpen(String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize) {
+        //获取最大列表数和当前页编号
+        int numbers = articleDao.getArticleCountsByOpen();
+        int pageStart = (pageNum - 1) * pageSize;
+
+        List<Article> articles = articleDao.getAllArticleByOpen("%" + title + "%", pageStart, pageSize);
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("number", numbers);
+        res.put("data", articles);
+        String res_String = JSON.toJSONString(res);
+        return res_String;
+    }
+
+    //获取谋用户所有已公开笔记
+    @RequestMapping("/getArticleOpenUserId")
+    public String getArticleOpenUserId(@RequestParam("userId") int userId, String title, @RequestParam("pageStart") Integer pageNum, Integer pageSize) {
+        //获取最大列表数和当前页编号
+        int numbers = articleDao.getArticleCountsByOpenUserId(userId);
+        int pageStart = (pageNum - 1) * pageSize;
+
+        List<Article> articles = articleDao.getAllArticleByOpenUserId(userId, "%" + title + "%", pageStart, pageSize);
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("number", numbers);
+        res.put("data", articles);
+        String res_String = JSON.toJSONString(res);
+        return res_String;
     }
 
     //获取全部个人笔记数据（根据用户及类别）

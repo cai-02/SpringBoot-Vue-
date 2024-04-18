@@ -54,7 +54,6 @@
 </template>
   
 <script>
-import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Vue from 'vue'
 import Header from '../components/header.vue'
 import Cookies from 'js-cookie'
@@ -146,13 +145,6 @@ export default Vue.extend({
         },
         handleCheckboxChange() {
             //console.log(JSON.stringify(this.checkedItems))
-        },
-        sakuraChange() {  //落樱效果切换
-            if (staticx) {
-                stopp();
-            } else {
-                startSakura();
-            }
         },
     },
     //监听路由变化，刷新页面数据

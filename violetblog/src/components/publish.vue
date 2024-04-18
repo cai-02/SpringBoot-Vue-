@@ -66,16 +66,10 @@
             <!-- 底部 -->
             <el-footer>Copyright © 2023 <span>violet蔡</span> All rights reserved</el-footer>
         </el-main>
-        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
-            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
-                <use xlink:href="#icon-shezhitianchong"></use>
-            </svg>
-        </div>
     </el-container>
 </template>
   
 <script>
-import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Header from '../components/header.vue'
 import Vue from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
@@ -220,13 +214,6 @@ export default Vue.extend({
         coverUploadSuccess(response) {
             this.imgUrl = response
         },
-        sakuraChange() {  //落樱效果切换
-            if (staticx) {
-                stopp();
-            } else {
-                startSakura();
-            }
-        },
     },
     mounted() {
 
@@ -252,7 +239,7 @@ export default Vue.extend({
 }
 
 .main-1 {
-    background-image: url(../assets/images/zhuti1.jpg);
+    background-image: url(../assets/images/publish2.jpg);
     background-size: cover;
     position: fixed;
     display: flex;

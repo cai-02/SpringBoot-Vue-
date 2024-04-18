@@ -14,8 +14,13 @@ import Publish from '../components/publish.vue'
 import Notes from '../components/notes.vue'
 import Category from '../components/category.vue'
 import Catemanage from '../components/catemanage.vue'
+import Liuyan from '../components/liuyan.vue'
 import MyFile from '../components/admin/myFile.vue'
 import Pictur from '../components/pictur.vue'
+import Playground from '../components/playground.vue'
+import Opennotes from '../components/opennotes.vue'
+import Friend from '../components/friend.vue'
+import Friendnotes from '../components/friendnotes.vue'
 
 Vue.use(VueRouter)
 
@@ -69,8 +74,33 @@ const routes = [
   }
   ,
   {
+    path: "/playground",
+    component: Playground
+  }
+  ,
+  {
     path: "/pictur",
     component: Pictur
+  }
+  ,
+  {
+    path: "/liuyan",
+    component: Liuyan
+  }
+  ,
+  {
+    path: "/opennotes",
+    component: Opennotes
+  }
+  ,
+  {
+    path: "/friend",
+    component: Friend
+  }
+  ,
+  {
+    path: "/friendnotes/:id",
+    component: Friendnotes
   }
   ,
 ]

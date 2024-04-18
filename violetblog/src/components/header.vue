@@ -36,25 +36,33 @@
                 </svg>
                 类别
             </el-menu-item>
-            <el-menu-item class="liu" index="4" @click="toLiuyan">
+            <el-menu-item class="liu" index="4" @click="toPlayGround">
+                <span class="el-icon-location" style="width: 21.6px; height: 21.6px; color: #92e2c8;"></span>
+                广场
+            </el-menu-item>
+            <el-menu-item class="liu" index="5" @click="toLiuyan">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-liuyan"></use>
                 </svg>
                 留言
             </el-menu-item>
-            <el-menu-item class="xiang" index="5" @click="toXiangce">
+            <el-menu-item class="xiang" index="6" @click="toXiangce">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-xiangce"></use>
                 </svg>
                 相册
             </el-menu-item>
-            <el-menu-item class="guan" index="6" @click="guanyu">
+            <el-menu-item class="xiang" index="7" @click="toFriend">
+                <span class="el-icon-paperclip" style="width: 21.6px; height: 21.6px; color: rgb(255 89 89);"></span>
+                好友
+            </el-menu-item>
+            <el-menu-item class="guan" index="8" @click="guanyu">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-guanyuwomen"></use>
                 </svg>
                 关于
             </el-menu-item>
-            <el-menu-item class="hou" index="7" @click="intoSystem">
+            <el-menu-item class="hou" index="9" @click="intoSystem">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-houtai"></use>
                 </svg>
@@ -156,7 +164,13 @@ export default {
             this.activeIndex = '0';
         } else if (herf[herf.length - 1] == 'catemanage') {
             this.activeIndex = '3';
+        } else if (herf[herf.length - 1] == 'playground') {
+            this.activeIndex = '4';
         } else if (herf[herf.length - 1] == 'pictur') {
+            this.activeIndex = '6';
+        } else if (herf[herf.length - 1] == 'friend') {
+            this.activeIndex = '7';
+        } else if (herf[herf.length - 1] == 'liuyan') {
             this.activeIndex = '5';
         }
         this.userId = Cookies.get("userId");
@@ -241,13 +255,25 @@ export default {
                 this.$router.push({ path: '/catemanage' })
             }
         },
+        //去到广场页
+        toPlayGround() {
+            if (this.$route.path == "/playground") {
+                location.reload();
+            } else {
+                this.$router.push({ path: '/playground' })
+            }
+        },
         //搜索
         menuSearch() {
             this.centerDialogVisible = true;
         },
         //去到留言
         toLiuyan() {
-            this.$message.warning('该功能暂未开放！');
+            if (this.$route.path == "/liuyan") {
+                location.reload();
+            } else {
+                this.$router.push({ path: '/liuyan' })
+            }
         },
         //去到相册
         toXiangce() {
@@ -255,6 +281,14 @@ export default {
                 location.reload();
             } else {
                 this.$router.push({ path: '/pictur' })
+            }
+        },
+        //去到好友页
+        toFriend() {
+            if (this.$route.path == "/friend") {
+                location.reload();
+            } else {
+                this.$router.push({ path: '/friend' })
             }
         },
         //关于
@@ -351,7 +385,7 @@ export default {
 }
 
 /deep/ .el-dialog {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     max-height: 400px;
     margin-top: 70px !important;
     border-radius: 8px;

@@ -4,20 +4,22 @@
         <p-header></p-header>
         <!-- 内容 -->
         <el-main>
-            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(${randomBackground})` }"> <!-- 文章背景图绑定 -->
-                <h1 class="noteFont" style="font-size: 35px; color: #39c5bb; margin-top: 65px; margin-bottom: 0;">
+            <div class="main-1" ref="targetDiv" :style="{ backgroundImage: `url(${randomBackground})` }">
+                <!-- 文章背景图绑定 -->
+                <h1 class="noteFont"
+                    style="font-size: 35px; color: rgb(46 95 104); margin-top: 65px; margin-bottom: 0;">
                     <span>{{ article.title }}</span>
                 </h1>
-                <h1 class="noteFont2" style="font-size: 20px; color: white; margin-top: 10px;">
+                <h1 class="noteFont2" style="font-size: 20px; color: rgb(46 95 104); margin-top: 10px;">
                     <span>{{ article.categoryName
-                    }}</span>&nbsp;<span>{{ this.articleMessage.pubTime | dateFormat2 }}</span>
+                        }}</span>&nbsp;<span>{{ this.articleMessage.pubTime | dateFormat2 }}</span>
                 </h1>
             </div>
             <!-- 主内容部分 -->
             <div class="main-2" style="text-align: center;">
                 <div class="page-container">
-                    <i-aside></i-aside>
-                    <div class="recent-posts" style="width: 60%; margin-top: 5px; position: relative;">
+                    <i-aside v-if="showSidebar"></i-aside>
+                    <div class="recent-posts" :style="{width: jianWidth}" style="margin-top: 5px; position: relative;">
                         <el-popover placement="top" trigger="hover" content="编辑" v-show="contentShow">
                             <div class="el-icon-edit bianji" slot="reference" @click="edit()"
                                 style="background: #39c5bb; width: 50px; color: white; padding-left: 1px;
@@ -29,7 +31,8 @@
                         padding-top: 12px; font-size: 25px; height: 50px; border-radius: 50%; right: -60px; position: absolute; cursor: pointer;"></div>
                         </el-popover>
                         <el-card style="margin: 0 auto; height: 100%;" class="el-card-two" v-show="contentShow">
-                            <div v-html="this.article.content" style="text-align: left; margin: -8px 0px 20px 10px; font-size: 18px;">
+                            <div v-html="this.article.content"
+                                style="text-align: left; margin: -8px 0px 20px 10px; font-size: 18px;">
 
                             </div>
                         </el-card>
@@ -42,7 +45,8 @@
                                     </el-form-item>
                                     <el-form-item label="类型">
                                         <el-select v-model="article.categoryName" placeholder="选择类型">
-                                            <el-option v-for="item in category" :value="item.categoryName" :label="item.categoryName"></el-option>
+                                            <el-option v-for="item in category" :value="item.categoryName"
+                                                :label="item.categoryName"></el-option>
                                         </el-select>
                                     </el-form-item>
                                     <el-form-item style="margin-right: 0; float: right;">
@@ -74,17 +78,30 @@
             <!-- 底部 -->
             <el-footer>Copyright © 2023 <span>violet蔡</span> All rights reserved</el-footer>
         </el-main>
-        <div style="position: fixed; bottom: 70px; right: 14px;" @click="intop" text="向上">
+        <div style="position: fixed; bottom: 65px; right: 14px;" @click="intop" text="向上">
             <i class="el-icon-top intop" style="font-size: 40px; color: #4fc5f6; font-weight: bold;"></i>
         </div>
-        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
-            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
-                <use xlink:href="#icon-shezhitianchong"></use>
-            </svg>
-        </div>
+        <el-popover placement="left" trigger="hover">
+            <el-popover placement="top" trigger="hover">
+                <div>樱花漫天</div>
+                <el-button slot="reference" type="primary" size="mini" plain @click="sakuraChange">
+                    <div class="el-icon-magic-stick" style="font-size: 15px; color: red;"></div>
+                </el-button>
+            </el-popover><br />
+            <el-popover placement="left" trigger="hover">
+                <div>简洁模式</div>
+                <el-button slot="reference" style="margin-top: 8px;" type="primary" size="mini" plain @click="changeJ">
+                    <div class="el-icon-refresh" style="font-size: 15px; color: red;"></div>
+                </el-button>
+            </el-popover><br />
+            <div slot="reference" class="el-icon-s-tools settings"
+                style="position: fixed; font-size: 35px; color: rgb(83 181 230); bottom: 20px; right: 15.5px;"
+                text="设置">
+            </div>
+        </el-popover>
     </el-container>
 </template>
-  
+
 <script>
 import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Vue from 'vue'
@@ -111,7 +128,7 @@ export default Vue.extend({
             editor: null,
             html: '<p></p>',
             toolbarConfig: {},
-            editorConfig: { 
+            editorConfig: {
                 placeholder: '请输入内容...',
                 MENU_CONF: {
                     // 配置上传图片
@@ -175,6 +192,8 @@ export default Vue.extend({
                 userId: 0,
             },
             category: [],
+            showSidebar: JSON.parse(sessionStorage.getItem('leftVisi')) !== false, // 从 sessionStorage 中获取状态，默认为 true
+            jianWidth: sessionStorage.getItem("jianWidth"),
         };
     },
     created() {
@@ -226,7 +245,7 @@ export default Vue.extend({
             this.contentShow2 = !this.contentShow2;
         },
         //保存
-        async save(){
+        async save() {
             if (this.article.title == "") {
                 this.$message.warning("标题不能为空！")
             } else {
@@ -244,6 +263,45 @@ export default Vue.extend({
                 } else {
                     this.$message.error("更新失败！")
                 }
+            }
+        },
+        //模拟组合键触发函数(快速保存)
+        async quickSave() {
+            //编辑状态
+            if (this.contentShow2 === true) {
+                // 检查是否按下了Ctrl + S 组合键
+                if (event.ctrlKey && event.key === "s") {
+                    // 阻止默认的浏览器保存事件
+                    event.preventDefault();
+                    // 执行保存方法
+                    if (this.article.title == "") {
+                        this.$message.warning("标题不能为空！")
+                    } else {
+                        //当前时间获取
+                        var nowTime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+                        this.article.author = JSON.parse(Cookies.get("user")).username;
+                        this.article.time = nowTime;
+                        this.article.content = this.html;
+                        const { data: res } = await this.$http.put("/updateArticle", this.article)    //访问后台
+                        if (res == "success") {
+                            this.$message.success("更新成功！")
+                        } else {
+                            this.$message.error("更新失败！")
+                        }
+                    }
+                }
+            }
+        },
+        //简洁模式切换
+        changeJ() {
+            this.showSidebar = !this.showSidebar; // 切换状态
+            sessionStorage.setItem('leftVisi', this.showSidebar); // 存储状态到 sessionStorage
+            if(this.showSidebar !== true) {
+                this.jianWidth = "75%";
+                sessionStorage.setItem('jianWidth', "75%");
+            }else{
+                this.jianWidth = "60%";
+                sessionStorage.setItem('jianWidth', "60%");
             }
         },
         sakuraChange() {  //落樱效果切换
@@ -266,13 +324,15 @@ export default Vue.extend({
             this.randomBackground = require(`@/assets/images/randomImage/${randomNumber}.jpg`);
         }
     },
-    mounted() {
-
+    mounted: function () {
+        // 监听键盘按下事件
+        document.addEventListener("keydown", this.quickSave);
     },
     beforeDestroy() {
         const editor = this.editor
         if (editor == null) return
         editor.destroy() // 组件销毁时，及时销毁编辑器
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
 
 })
@@ -313,6 +373,11 @@ export default Vue.extend({
     width: 90%;
     padding: 20px 20px 40px 20px;
     margin: 0 auto;
+    min-height: 455px;
+}
+
+.recent-posts {
+    width: 60%;
 }
 
 .aside-content {
@@ -332,39 +397,48 @@ export default Vue.extend({
 
 /* 手机端样式 */
 @media screen and (max-width: 767px) {
-  .noteFont{
-    font-size: 18px !important;
-  }
-  .noteFont2{
-    font-size: 18px !important;
-  }
+    .noteFont {
+        font-size: 18px !important;
+    }
 
-  .main-1 {
-    height: 180px !important;
-  }
-  .bianji{
-    position: fixed !important;
-    top: 185px !important;
-    right: 10px !important;
-    z-index: 10 !important;
-  }
-  .wangEdi{
-    display: none !important;
-  }
-  .aside-content {
-    display: none !important;
-  }
-  .qinkong{
-    display: none;
-  }
-  /deep/ .el-form-item__content{
-    max-width: 100px;
-  }
-  /deep/ .el-card__body{
-    padding: 10px;
-  }
-  .page-container{
-    padding: 20px 5px 40px 5px !important;
-  }
+    .noteFont2 {
+        font-size: 18px !important;
+    }
+
+    .main-1 {
+        height: 180px !important;
+    }
+
+    .bianji {
+        position: fixed !important;
+        top: 185px !important;
+        right: 10px !important;
+        z-index: 10 !important;
+    }
+
+    .wangEdi {
+        display: none !important;
+    }
+
+    .aside-content {
+        display: none !important;
+    }
+
+    .qinkong {
+        display: none;
+    }
+
+    /deep/ .el-form-item__content {
+        max-width: 100px;
+    }
+
+    /deep/ .el-card__body {
+        padding: 10px;
+    }
+
+    .page-container {
+        padding: 20px 5px 40px 5px !important;
+        min-height: 455px;
+    }
 }
 </style>

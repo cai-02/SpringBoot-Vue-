@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,14 +38,21 @@ class VioletCaiApplicationTests {
     @Autowired
     AnnouncementDao announcementDao;
 
+    @Autowired
+    FriendStateDao friendStateDao;
+
     @Test
     void contextLoads() {
-        Announcement announcement = announcementDao.getAnnouncement();
-        HashMap<String, Object> res = new HashMap<>();
-        res.put("data", announcement);
-
-        String resJson = JSON.toJSONString(res);    //转换json会自动去掉空字段
-        System.out.println(resJson);
+        FriendState friendState = new FriendState();
+        friendState.setUserId(1);
+        friendState.setUsername("violet");
+        friendState.setFriId(19);
+        friendState.setFriName("cai");
+        friendState.setContent("htmlasdasdasd");
+        friendState.setState("待同意");
+        friendState.setTime(LocalDateTime.now());
+        int i = friendStateDao.addFriendState(friendState);
+        System.out.println(i > 0 ? "success":"error");
     }
 
     public String getPictur(@RequestParam("userId") int id){

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.violetcai.dao.FriendDao">
+
+    <select id="getFriend" resultType="com.cai.violetcai.bean.Friend">
+        select * from user where user_id in (SELECT b.fri_id FROM user a inner JOIN friend b  on a.user_id = b.user_id where a.user_id = #{id})
+    </select>
+
+    <select id="getFriendExSelf" resultType="com.cai.violetcai.bean.User">
+        select * from user where user_id in (select user_id from user where user_id not in (SELECT b.fri_id FROM user a inner JOIN friend b  on a.user_id = b.user_id where a.user_id = #{id}) and user_id != #{id}) and username like #{username}
+    </select>
+
+    <insert id="addFriendRelate">
+        insert into friend(user_id, username, fri_id) values (#{userId}, #{username}, #{friId})
+    </insert>
+
+<!--    <delete id="deleteLiuyan" parameterType="int">-->
+<!--        DELETE from announcement where liuyan_id=#{liuyanId}-->
+<!--    </delete>-->
+
+</mapper>

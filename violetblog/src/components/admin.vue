@@ -3,7 +3,7 @@
     <el-container class="home-container">
         <el-header>
             <div>
-                <img style="margin-left: 2px;" src="../assets/logo.jpg" alt />
+                <img style="margin-left: 2px;" src="../assets/images/logo.jpg" alt />
                 <span style="font-size: 22px; color: #18bf2d;">风之谷</span>
             </div>
             <el-button type="primary" @click="logout()">退出</el-button>
@@ -35,16 +35,10 @@
                 <router-view></router-view>
             </el-main>
         </el-container>
-        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
-            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
-                <use xlink:href="#icon-shezhitianchong"></use>
-            </svg>
-        </div>
     </el-container>
 </template>
 
 <script>
-import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Cookies from 'js-cookie'
 
 export default {
@@ -95,13 +89,6 @@ export default {
             Cookies.set('activePath', activePath, { expires: 7 });
             this.activePath = activePath;
         },
-        sakuraChange() {  //落樱效果切换
-            if (staticx) {
-                stopp();
-            } else {
-                startSakura();
-            }
-        },
     },
     //监听路由，返回上一级时刷新左侧导航栏状态
     watch: {
@@ -122,7 +109,7 @@ export default {
 }
 
 .el-header {
-    background-color: #c1ecda;
+    background-color: #c1e6eb;
     display: flex;
     justify-content: space-between; //左右贴边
     padding-left: 0%; //左边界
@@ -147,7 +134,7 @@ export default {
 }
 
 .el-aside {
-    background-color: #c1ecda;
+    background-color: #c1e6eb;
     .el-menu{
         border-right: none;
     }
@@ -179,7 +166,7 @@ img {
   background: #e0fff1 !important;
 }
 /deep/.el-menu .el-menu-item.is-active {
-    background: #e0fff1 !important;
+    background: #d0fbf1 !important;
 }
 
 /* 手机端样式 */

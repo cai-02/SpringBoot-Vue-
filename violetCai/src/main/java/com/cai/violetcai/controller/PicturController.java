@@ -9,6 +9,8 @@ import com.cai.violetcai.bean.Pictur;
 import com.cai.violetcai.bean.User;
 import com.cai.violetcai.dao.PicturDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +53,8 @@ public class PicturController {
         return imgUrl;
     }
 
+    @Value("${service.albumAdd}")
+    private String albumAdd;
     //删除图片
     @RequestMapping("/deletePictur")
     public String deletePictur(@RequestBody List<String> picturUrl){
@@ -64,8 +68,8 @@ public class PicturController {
             // 获取路径的最后一部分
             String[] segments2 = element.split("/");
             String lastSegment = segments2[segments2.length - 1];
-            String basePath = System.getProperty("user.dir") + "/src/main/resources/images/albumImage/";
-            //String basePath = System.getProperty("user.dir") + "/albumImage/";
+            //String basePath = System.getProperty("user.dir") + "/src/main/resources/images/albumImage/";
+            String basePath = System.getProperty("user.dir") + albumAdd;
             List<String> fileNames = FileUtil.listFileNames(basePath);   // 获取所有文件名称
             String fileName = fileNames.stream().filter(name -> name.contains(lastSegment)).findAny().orElse("");
             if (StrUtil.isNotEmpty(fileName)) {

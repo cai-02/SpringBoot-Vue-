@@ -24,4 +24,6 @@ public interface CategoryDao {
     public int deleteMultipleCate(List<Integer> id);
     //移动分类
     public int moveCate(List<Integer> id, int userId);
+    //更改类名
+    public int updateCateName(String cateName, int cateId);
 }

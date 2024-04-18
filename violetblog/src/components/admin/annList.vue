@@ -106,6 +106,7 @@ export default {
         addDialogClosed() {
             this.$refs.addFormRef.resetFields();
         },
+        //添加公告
         async addAnn() {
             //检测用户名唯一性
             const { data: res } = await this.$http.post('addAnn', this.annForm);

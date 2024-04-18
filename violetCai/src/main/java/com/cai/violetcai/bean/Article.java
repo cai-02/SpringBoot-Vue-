@@ -20,5 +20,6 @@ public class Article {
     private int userId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime pubTime;
+    private boolean open;
 
 }

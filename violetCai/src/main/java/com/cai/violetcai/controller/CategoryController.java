@@ -55,6 +55,19 @@ public class CategoryController {
         return i > 0 ? "success":"error";
     }
 
+    //根据分类id查询分类名
+    @RequestMapping("/getCateNameById")
+    public String getCateNameById(int cateId){
+        return categoryDao.getCategoryNameById(cateId);
+    }
+
+    //改分类名
+    @RequestMapping("/updateCateName")
+    public String updateCateName(String cateName, int cateId){
+        int i = categoryDao.updateCateName(cateName, cateId);
+        return i > 0 ? "success":"error";
+    }
+
     //删除分类
     @Transactional   //事务管理
     @RequestMapping("/deleteCate/{id}/{userId}")

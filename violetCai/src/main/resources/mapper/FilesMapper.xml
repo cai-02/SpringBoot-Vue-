@@ -11,7 +11,7 @@
     </select>
 
     <select id="getFilesCounts" resultType="int">
-        select count(*) from files
+        select count(*) from files where user_id=#{userId}
     </select>
 
     <insert id="addFiles">

@@ -1,0 +1,30 @@
+# mysql
+spring:
+  #时区(存入数据库+8）
+  jackson:
+    time-zone: GMT+8
+  datasource:
+    #MySQL配置(解析时间区域为亚洲上海，否则会快8小时
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/notes_platform?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: cjl081314
+  #文件大小
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.demo.model
+  configuration:
+    mapUnderscoreToCamelCase:  true
+
+server:
+  port: 9000
+
+service:
+  address: "localhost"
+  headAdd: "/src/main/resources/images/headImage/"
+  albumAdd: "/src/main/resources/images/albumImage/"
+  fileAdd: "/src/main/resources/files/"

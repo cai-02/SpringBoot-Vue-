@@ -5,7 +5,7 @@
             <transition name="el-zoom-in-top">
                 <div class="login_box" v-show="show2" style="background-color: rgb(255, 255, 255, 0.9);">
                     <div class="avatar_box">
-                        <img src="../assets/logo.jpg" alt />
+                        <img src="../assets/images/logo.jpg" alt />
                     </div>
                     <div style="font-size: 30px; width: 75px; margin: auto; margin-top: 85px;">登 录</div>
                     <!-- 表单区域 -->
@@ -94,16 +94,10 @@
                 </div>
             </transition>
         </div>
-        <div class="settings" style="position: fixed; bottom: 20px; right: 15px;" @click="sakuraChange" text="设置">
-            <svg class="icon" aria-hidden="true" style="width: 2.2em; height: 2.2em;">
-                <use xlink:href="#icon-shezhitianchong"></use>
-            </svg>
-        </div>
     </div>
 </template>
 
 <script>
-import { startSakura, stopp, staticx } from "@/assets/js/sakura"
 import Cookies from 'js-cookie'
 
 export default {
@@ -180,6 +174,8 @@ export default {
                 const { data: res } = await this.$http.post("login", this.userCookie)    //访问后台
                 if (res.flag == "ok") {
                     this.$message.success("登录成功！")
+                    window.sessionStorage.setItem("leftVisi", true)  //默认非简洁模式
+                    window.sessionStorage.setItem("jianWidth", "60%")  //默认非简洁模式
                     this.$router.push({ path: "/index" });      //页面路由跳转
                 } else {
                     this.$message.error("登录失败！")
@@ -202,6 +198,8 @@ export default {
                         Cookies.set('rememberMe', true, { expires: 7 });
                     }
                     window.sessionStorage.setItem('success', true);
+                    window.sessionStorage.setItem("leftVisi", true)  //默认非简洁模式
+                    window.sessionStorage.setItem("jianWidth", "60%")  //默认非简洁模式
                     this.$message.success("登录成功！")
                     this.$router.push({ path: "/index" });      //页面路由跳转
                     //存储用户角色
@@ -234,13 +232,6 @@ export default {
                     this.show2 = !this.show2
                 }
             })
-        },
-        sakuraChange() {  //落樱效果切换
-            if (staticx) {
-                stopp();
-            } else {
-                startSakura();
-            }
         },
     },
 }

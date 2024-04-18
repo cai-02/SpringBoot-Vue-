@@ -62,13 +62,18 @@
                 <span class="xinjian"
                     style="display: block; margin-top: 3px; font-size: 20px; text-align: left; color: #1ee6a3; position: absolute;">
                     类别</span>
-                <span class="el-icon-circle-plus-outline" style="display: block; color: #1ee6a3; font-size: 30px;"></span>
+                <span class="el-icon-circle-plus-outline"
+                    style="display: block; color: #1ee6a3; font-size: 30px;"></span>
             </div>
         </div>
         <!-- 类别显示区 -->
-        <div v-for="(item, index) in category.slice(0, visibleCardCount)" :key="index" @click="toCategory(item.categoryId)">
+        <div v-for="(item, index) in category.slice(0, visibleCardCount)" :key="index"
+            @click="toCategory(item.categoryId)">
             <el-card class="preson-message el-card-three"
-                :style="{ 'background-color': getRandomColor(), height: '160px', cursor: 'pointer' }">
+                :style="{ 'background-color': getRandomColor(), height: '160px', cursor: 'pointer', position: 'relative' }">
+                <i v-if="index !== category.length - 1" class="el-icon-edit cate-edit"
+                    @click.stop="toEdit(item.categoryId)"
+                    style="position: absolute; left: 10px; top: 10px; color: skyblue; font-size: 18px;"></i>
                 <div class="aside-type">
                     <span class="category-name">{{ item.categoryName }}</span>
                 </div>
@@ -85,6 +90,21 @@
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="addDialogVisible = false">取消</el-button>
                     <el-button type="primary" @click="addCate()">确定</el-button>
+                </span>
+            </el-dialog>
+        </div>
+        <!-- 编辑类别区域 -->
+        <div>
+            <el-dialog title="修改分类名" :visible.sync="addDialogVisible2">
+                <el-form :model="cateUpdate" label-width="65px">
+                    <el-form-item label="类名" prop="categoryName">
+                        <el-input placeholder="请输入分类名" v-model="cateUpdate.cateName"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="addDialogVisible2 = false">取消</el-button>
+                    <el-button type="primary"
+                        @click="updateCateName(cateUpdate.cateName, cateUpdate.cateId)">确定</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -117,30 +137,30 @@
                 <svg class="icon icon-st" aria-hidden="true">
                     <use xlink:href="#icon-tongji"></use>
                 </svg>
-                <span style="font-size: 20px;">生涯统计<small style="color: gray;">（待更新）</small></span>
+                <span style="font-size: 20px;">生涯统计<small style="color: gray;"></small></span>
             </div>
             <div class="aside-items-sty">
                 <div class="web-count">
                     <span>使用天数</span>
-                    <span class="count-num">1 天</span>
+                    <span class="count-num">{{ this.userAddTime | dateFormat5 }}</span>
                 </div>
                 <div class="web-count">
                     <span>总笔记数</span>
-                    <span class="count-num">1 篇</span>
+                    <span class="count-num">{{ articleCounts }} 篇</span>
                 </div>
                 <div class="web-count">
                     <span>总类别数</span>
-                    <span class="count-num">1 类</span>
+                    <span class="count-num">{{ category.length }} 类</span>
                 </div>
-                <div class="web-count">
-                    <span>好友</span>
-                    <span class="count-num">0 人</span>
+                <div class="web-count" style="margin-bottom: 3px;">
+                    <span>文件数</span>
+                    <span class="count-num">{{ fileCounts }} 个</span>
                 </div>
             </div>
         </el-card>
     </div>
 </template>
-  
+
 <script>
 import Cookies from 'js-cookie'
 
@@ -157,20 +177,27 @@ export default ({
             userId: 0,
             category: [],
             addDialogVisible: false,     //对话框状态
+            addDialogVisible2: false,
             cate: {
                 categoryName: "",
                 userId: 0,
             },
+            cateUpdate: {
+                cateName: "",
+                cateId: 0,
+            },
             addFormRules: {
                 categoryName: [
                     { required: true, message: '请输入分类名', trigger: 'blur' },
-                    { min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur' }
+                    { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
                 ],
             },
             visibleCardCount: 5,    //默认显示五条类别
             moreText: "更多",
             showCateBut: false,
             announcement: "",
+            userAddTime: "",
+            fileCounts: 0,
         };
     },
     async created() {
@@ -189,6 +216,10 @@ export default ({
         //加载公告
         const { data: res } = await this.$http.get("getAnn");
         this.announcement = res.data.content;
+
+        //生涯统计
+        this.getAddTime();
+        this.getFileCounts();
     },
     methods: {
         async getArticleList() {
@@ -225,6 +256,27 @@ export default ({
                 this.showCateBut = true;
             } else {
                 this.showCateBut = false;
+            }
+        },
+        async toEdit(cateId) {
+            this.addDialogVisible2 = true;
+            const { data: res } = await this.$http.get(`getCateNameById?cateId=${cateId}`);
+            this.cateUpdate.cateName = res;
+            this.cateUpdate.cateId = cateId;
+        },
+        //修改分类
+        async updateCateName(cateName, cateId) {
+            if (this.cateUpdate.cateName === "") {
+                this.$message.warning("分类名不能为空！")
+            } else {
+                const { data: res } = await this.$http.get(`updateCateName?cateName=${cateName}&cateId=${cateId}`);
+                if (res === "success") {
+                    this.$message.success("修改成功！")
+                    this.addDialogVisible2 = false;
+                    this.loadCategory();
+                } else {
+                    this.$message.success("修改失败！")
+                }
             }
         },
         //显示全部分类
@@ -285,9 +337,20 @@ export default ({
                 this.$router.push({ path: '/pictur' })
             }
         },
+        //获取创建时间
+        async getAddTime() {
+            const { data: res } = await this.$http.get(`getAddTime?userId=${this.userId}`);
+            this.userAddTime = res;
+        },
+        //获取文件数
+        async getFileCounts() {
+            const { data: res } = await this.$http.get(`getFileCounts?userId=${this.userId}`);
+            this.fileCounts = res;
+        },
     },
 })
 </script>
+
 <style lang="less" scoped>
 .noteA:hover {
     background: #fdd985 !important;
@@ -325,6 +388,10 @@ export default ({
 .headIm:hover {
     transform: rotate(360deg);
     /* 鼠标悬停时顺时针旋转360度 */
+}
+
+.cate-edit:hover {
+    color: orange !important;
 }
 
 .headIm:active {

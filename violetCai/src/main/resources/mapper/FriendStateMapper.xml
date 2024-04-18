@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.violetcai.dao.FriendStateDao">
+
+    <select id="getFriendMes" resultType="com.cai.violetcai.bean.FriendState">
+        select * from friendstate where fri_id = #{friId}
+    </select>
+
+    <insert id="addFriendState">
+        insert into friendstate(user_id, username, fri_id, fri_name, content, time, state) values (#{userId}, #{username}, #{friId}, #{friName}, #{content}, #{time}, #{state})
+    </insert>
+
+    <delete id="deleteFriendRelate" parameterType="int">
+        DELETE from friendstate where user_id=#{userId} and fri_id=#{friId}
+    </delete>
+
+</mapper>

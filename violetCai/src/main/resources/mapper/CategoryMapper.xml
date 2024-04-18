@@ -26,6 +26,10 @@
         insert into category(category_name, user_id) values (#{categoryName}, #{userId})
     </insert>
 
+    <update id="updateCateName">
+        update category set category_name=#{cateName} where category_id=#{cateId}
+    </update>
+
     <!--    多选删除-->
     <delete id="deleteMultipleCate" parameterType="java.util.List">
         DELETE FROM category

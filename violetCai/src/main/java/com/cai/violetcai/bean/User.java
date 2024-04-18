@@ -2,6 +2,8 @@ package com.cai.violetcai.bean;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * 用户实体
  */
@@ -15,5 +17,6 @@ public class User {
     private String role;
     private boolean state;
     private String headimage;
+    private LocalDateTime addTime;
 
 }

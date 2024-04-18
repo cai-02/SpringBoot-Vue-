@@ -11,6 +11,7 @@ import com.cai.violetcai.dao.ArticleDao;
 import com.cai.violetcai.dao.CategoryDao;
 import com.cai.violetcai.dao.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -55,12 +56,15 @@ public class UserController {
         return i > 0 ? "success":"error";
     }
 
+    @Value("${service.address}")
+    private String address;
     @RequestMapping("/adduser")
     public String addUser(@RequestBody User user){
         user.setRole("普通用户");
         user.setState(true);
-        user.setHeadimage("http://localhost:9000/files/head/aabfd7dc07704ed4adef568c0797adc2");
-        //user.setHeadimage("http://47.108.66.150:9000/files/head/aabfd7dc07704ed4adef568c0797adc2");
+        user.setAddTime(LocalDateTime.now());
+        //user.setHeadimage("http://localhost:9000/files/head/aabfd7dc07704ed4adef568c0797adc2");
+        user.setHeadimage("http://" + address + ":9000/files/head/aabfd7dc07704ed4adef568c0797adc2");
         int i = userDao.addUser(user);
         if(i > 0) {
             //创建用户时创建默认分类
@@ -73,13 +77,16 @@ public class UserController {
             Article article = new Article();
             article.setTitle("而你，我的朋友，你才是真正的英雄！");
             article.setAuthor(user.getUsername());
-            article.setContent("<p><img src=\"http://localhost:9000//files/head/noteDafultImg.jpg\" alt=\"\" data-href=\"\" style=\"width: 100.00px;height: 100.39px;\"/></p>");
-            //article.setContent("<p><img src=\"http://47.108.66.150:9000//files/head/noteDafultImg.jpg\" alt=\"\" data-href=\"\" style=\"width: 100.00px;height: 100.39px;\"/></p>");
+            //article.setContent("<p><img src=\"http://localhost:9000//files/head/noteDafultImg.jpg\" alt=\"\" data-href=\"\" style=\"width: 100.00px;height: 100.39px;\"/></p>");
+            article.setContent("<p><img src=\"http://" + address +":9000//files/head/noteDafultImg.jpg\" alt=\"\" data-href=\"\" style=\"width: 100.00px;height: 100.39px;\"/></p>");
+
             article.setTime(LocalDateTime.now());
+            article.setPubTime(LocalDateTime.now());
             int id = userDao.getUserIdByName(user.getUsername()); //获取用户id
             int cateId = categoryDao.getCategoryId(id, "默认");
             article.setCategoryId(cateId);
             article.setCategoryName("默认");
+            article.setOpen(false);
             article.setUserId(id);
             articleDao.addArticle(article);
             return "success";
@@ -109,10 +116,12 @@ public class UserController {
         return i > 0 ? "success":"error";
     }
 
+    @Value("${service.headAdd}")
+    private String headAdd;
     @RequestMapping("/gethead")
     public String changeImage(@RequestParam("img") String img, @RequestParam("id") int id, String headFlag){
-        String basePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/";
-        //String basePath = System.getProperty("user.dir") + "/headImage/";
+        //String basePath = System.getProperty("user.dir") + "/src/main/resources/images/headImage/";
+        String basePath = System.getProperty("user.dir") + headAdd;
         List<String> fileNames = FileUtil.listFileNames(basePath);   // 获取所有文件名称
         String fileName = fileNames.stream().filter(name -> name.contains(headFlag)).findAny().orElse("");
         if (StrUtil.isNotEmpty(fileName)) {
@@ -136,10 +145,21 @@ public class UserController {
 
     @RequestMapping("/uniqueUser")
     @CrossOrigin
-    public boolean changeImage(String username){
+    public boolean uniqueUser(String username){
         // 调用 MyBatis 查询数据库，检查用户名是否已存在
         User existingUser = userDao.getUserByUsername(username);
         return existingUser == null; // 如果不存在，返回 true 表示用户名可用
+    }
+
+    //查询用户
+    @RequestMapping("/getUserByName")
+    public String getUserByName(String username){
+        List<User> user = userDao.getUserByName("%" + username + "%");
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("data", user);
+
+        String res_String = JSON.toJSONString(res);
+        return res_String;
     }
 
     //查看权限
@@ -147,6 +167,13 @@ public class UserController {
     public String changeImage(int userId){
         String role = userDao.getRole(userId);
         return role;
+    }
+
+    //获取创建时间
+    @RequestMapping("/getAddTime")
+    public String getAddTime(int userId){
+        String addTime = userDao.getAddTime(userId);
+        return addTime;
     }
 
 }

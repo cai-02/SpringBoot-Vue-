@@ -40,10 +40,8 @@
                                     @click="downLoadFile(scope.row.fileUrl)"></el-button>
                             </el-tooltip>
                             <!-- 删除 -->
-                            <el-tooltip type="dark" content="删除" placement="top-start" :enterable="false">
-                                <el-button type="danger" icon="el-icon-delete" size="mini"
+                            <el-button type="danger" icon="el-icon-delete" size="mini"
                                     @click="deleteFiles(scope.row.fileUrl)"></el-button>
-                            </el-tooltip>
                             <!-- 改名 -->
                             <!-- <el-tooltip type="dark" content="改名" placement="top-start" :enterable="false">
                                 文字提示 enterable隐藏

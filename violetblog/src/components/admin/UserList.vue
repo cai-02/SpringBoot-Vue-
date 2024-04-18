@@ -48,10 +48,8 @@
                                 @click="showEditDialog(scope.row.userId)"></el-button>
                         </el-tooltip>
                         <!-- 删除 -->
-                        <el-tooltip type="dark" content="删除" placement="top-start" :enterable="false">
-                            <el-button type="danger" icon="el-icon-delete" size="mini"
-                                @click="deleteUser(scope.row.userId)"></el-button>
-                        </el-tooltip>
+                        <el-button type="danger" icon="el-icon-delete" size="mini"
+                            @click="deleteUser(scope.row.userId)"></el-button>
                         <!-- 权限 -->
                         <el-tooltip type="dark" content="分配权限" placement="top-start" :enterable="false">
                             <!-- 文字提示 enterable隐藏 -->

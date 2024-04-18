@@ -42,6 +42,14 @@ Vue.filter('dateFormat3', function(value) {
     return `${days}天前`;
   }
 });
+//时间五
+Vue.filter('dateFormat5', function(value) {
+  const currentTime = new Date();
+  const previousTime = new Date(value);
+  const timeDifference = currentTime - previousTime;
+  const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000)) + 1;
+  return `${days} 天`;
+});
 //时间四
 export function formatDate(fmt, datestr) {
   var date = new Date(datestr);
